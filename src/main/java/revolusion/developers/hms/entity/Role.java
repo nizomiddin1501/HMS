@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "roles")
+@Table(name = "role")
 @Schema(description = "Role entity represents the different roles available for users.")
 public class Role {
 

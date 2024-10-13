@@ -6,9 +6,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Hotel;
 import revolusion.developers.hms.entity.Order;
+import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.exceptions.HotelException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
+import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.payload.HotelDto;
 import revolusion.developers.hms.repository.HotelRepository;
 import revolusion.developers.hms.service.HotelService;
@@ -52,7 +54,25 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelDto createHotel(HotelDto hotelDto) throws HotelException {
-        return null;
+        // 1. Convert DTO to Entity
+        Hotel hotel = dtoToHotel(hotelDto);
+
+        // 2. Perform business checks on the entity
+        if (hotel.getName() == null || hotel.getAddress() == null) {
+            throw new HotelException("Hotel name and address columns cannot be null");
+        }
+
+        // 3. Checking that the name column does not exist
+        boolean exists = hotelRepository.existsByName(hotel.getName());
+        if (exists) {
+            throw new HotelException("Hotel with this name already exists");
+        }
+
+        // 4. Save Hotel
+        Hotel savedHotel = hotelRepository.save(hotel);
+
+        // 5. Convert the saved Hotel to DTO and return
+        return hotelToDto(savedHotel);
     }
 
     @Override

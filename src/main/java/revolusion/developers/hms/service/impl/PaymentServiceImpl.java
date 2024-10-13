@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
-
+import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -48,8 +49,26 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentDto createPayment(PaymentDto paymentDto) throws PaymentException {
-        return null;
+    @Transactional
+    public PaymentDto createPayment(@Valid PaymentDto paymentDto) throws PaymentException {
+        // Convert dto to entity
+        Payment payment = dtoToPayment(paymentDto);
+
+        // Validate the payment DTO
+        if (payment.getAmount() == null || payment.getAmount() <= 0) {
+            throw new PaymentException("Amount must be greater than zero.");
+        }
+
+        // Check if the order associated with the payment exists
+        if (payment.getOrder() == null || payment.getOrder().getId() == null) {
+            throw new PaymentException("Order is required for the payment.");
+        }
+
+        // Save the payment
+        Payment savedPayment = paymentRepository.save(payment);
+
+        // Convert saved Payment entity back to PaymentDto and return
+        return paymentToDto(savedPayment);
     }
 
 
@@ -59,12 +78,9 @@ public class PaymentServiceImpl implements PaymentService {
         Payment existingPayment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", " Id ", paymentId));
 
-        // Conversion DTO to entity
-        Payment paymentDetails = dtoToPayment(paymentDto);
-
         // update payment details
-        existingPayment.setAmount(paymentDetails.getAmount());
-        existingPayment.setPaymentMethod(paymentDetails.getPaymentMethod());
+        existingPayment.setAmount(paymentDto.getAmount());
+        existingPayment.setPaymentMethod(paymentDto.getPaymentMethod());
 
         // Save updated payment
         Payment updatedPayment = paymentRepository.save(existingPayment);

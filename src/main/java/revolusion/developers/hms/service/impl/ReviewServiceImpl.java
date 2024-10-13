@@ -53,7 +53,27 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDto createReview(ReviewDto reviewDto) throws ReviewException {
-        return null;
+        // 1. Convert DTO to entity
+        Review review = dtoToReview(reviewDto);
+
+        // 2. Perform business checks on the entity( User, Order, Hotel with)
+        if (reviewDto.getUserDto() == null || reviewDto.getUserDto().getId() == null) {
+            throw new ReviewException("User is required for the review.");
+        }
+
+        if (reviewDto.getOrderDto() == null || reviewDto.getOrderDto().getId() == null) {
+            throw new ReviewException("Order is required for the review.");
+        }
+
+        if (reviewDto.getHotelDto() == null || reviewDto.getHotelDto().getId() == null) {
+            throw new ReviewException("Hotel is required for the review.");
+        }
+
+        // 3. Save Review
+        Review savedReview = reviewRepository.save(review);
+
+        // 4. Convert the saved User to DTO and return
+        return reviewToDto(savedReview);
     }
 
     @Override
@@ -61,12 +81,9 @@ public class ReviewServiceImpl implements ReviewService {
         Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review", " Id ", reviewId));
 
-        // Conversion DTO to entity
-        Review reviewDetails = dtoToReview(reviewDto);
-
         // update review details
-        existingReview.setRating(reviewDetails.getRating());
-        existingReview.setComment(reviewDetails.getComment());
+        existingReview.setRating(reviewDto.getRating());
+        existingReview.setComment(reviewDto.getComment());
 
         // Save updated review
         Review updatedReview = reviewRepository.save(existingReview);

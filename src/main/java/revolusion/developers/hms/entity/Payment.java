@@ -12,7 +12,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "payments")
+@Table(name = "payment")
 @Schema(description = "Payment entity represents the payment for an order.")
 public class Payment {
 
@@ -26,6 +26,7 @@ public class Payment {
             example = "150.00",
             required = true)
     private Double amount;
+
 
     @Column(name = "payment_date", nullable = false)
     @Schema(description = "Date of the payment",
@@ -45,9 +46,10 @@ public class Payment {
     private Order order;
 
 
+
     @PrePersist
     public void prePersist() {
-        this.paymentDate = new Date(System.currentTimeMillis()); // Hozirgi vaqtni saqlaydi
+        this.paymentDate = new Date(System.currentTimeMillis());
     }
 
 

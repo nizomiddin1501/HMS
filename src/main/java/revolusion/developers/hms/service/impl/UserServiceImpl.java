@@ -50,7 +50,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) throws UserException {
-        return null;
+        // 1. Convert DTO to entity
+        User user = dtoToUser(userDto);
+
+        // 2. Perform business checks on the entity
+        if (user.getName() == null ||
+                user.getName().isEmpty() ||
+                user.getEmail() == null ||
+                user.getEmail().isEmpty()) {
+            throw new UserException("User name and email must not be null or empty");
+        }
+
+        // 3. Checking that the email column does not exist
+        boolean exists = userRepository.existsByEmail(user.getEmail());
+        if (exists) {
+            throw new UserException("User with this email already exists");
+        }
+
+        // 4. Optionally hash the password before saving
+//        if (userDto.getPassword() != null) {
+//            String hashedPassword = passwordEncoder.encode(userDto.getPassword());
+//            user.setPassword(hashedPassword);
+//        }
+
+        // 4. Save User
+        User savedUser = userRepository.save(user);
+
+        // 4. Convert the saved User to DTO and return
+        return userToDto(savedUser);
     }
 
     @Override
@@ -58,14 +85,13 @@ public class UserServiceImpl implements UserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
 
-        // Conversion DTO to entity
-        User userDetails = dtoToUser(userDto);
-
         // update user details
-        existingUser.setName(userDetails.getName());
-        existingUser.setEmail(userDetails.getEmail());
-        existingUser.setPassword(userDetails.getPassword());
-        existingUser.setAbout(userDetails.getAbout());
+        existingUser.setName(userDto.getName());
+        existingUser.setEmail(userDto.getEmail());
+        if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
+            existingUser.setPassword(userDto.getPassword());
+        }
+        existingUser.setAbout(userDto.getAbout());
 
         // Save updated user
         User updatedUser = userRepository.save(existingUser);

@@ -52,7 +52,25 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomDto createRoom(RoomDto roomDto) throws RoomException {
-        return null;
+        // 1. Convert DTO to Entity
+        Room room = dtoToRoom(roomDto);
+
+        // 2. Perform business checks on the entity
+        if (room.getRoomNumber() == null || room.getCategory() == null) {
+            throw new RoomException("Room number and category cannot be null");
+        }
+
+        // 3. Checking that the roomNumber column does not exist
+        boolean exists = roomRepository.existsByRoomNumber(room.getRoomNumber());
+        if (exists) {
+            throw new RoomException("Room with this number already exists");
+        }
+
+        // 4. Save Room
+        Room savedRoom = roomRepository.save(room);
+
+        // 5. Convert the saved Room to DTO and return
+        return roomToDto(savedRoom);
     }
 
     @Override
@@ -60,13 +78,10 @@ public class RoomServiceImpl implements RoomService {
         Room existingRoom = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room", " Id ", roomId));
 
-        // Conversion DTO to entity
-        Room roomDetails = dtoToRoom(roomDto);
-
         // update room details
-        existingRoom.setRoomNumber(roomDetails.getRoomNumber());
-        existingRoom.setCategory(roomDetails.getCategory());
-        existingRoom.setPrice(roomDetails.getPrice());
+        existingRoom.setRoomNumber(roomDto.getRoomNumber());
+        existingRoom.setCategory(roomDto.getCategory());
+        existingRoom.setPrice(roomDto.getPrice());
 
         // Save updated room
         Room updatedRoom = roomRepository.save(existingRoom);

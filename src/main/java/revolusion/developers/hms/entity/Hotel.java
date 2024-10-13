@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "hotels")
+@Table(name = "hotel")
 @Schema(description = "Hotel entity represents a hotel in the system.")
 public class Hotel {
 

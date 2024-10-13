@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "orders")
+@Table(name = "order")
 @Schema(description = "Order entity represents a booking made by the user.")
 public class Order {
 
@@ -46,6 +46,24 @@ public class Order {
     @JoinColumn(name = "room_id", nullable = false)
     @Schema(description = "The room that was booked")
     private Room room;
+
+    @Column(name = "check_in_date", nullable = false)
+    @Schema(description = "The date the user plans to check in",
+            example = "2024-10-12",
+            required = true)
+    private LocalDate checkInDate;
+
+    @Column(name = "check_out_date", nullable = false)
+    @Schema(description = "The date the user plans to check out",
+            example = "2024-10-14",
+            required = true)
+    private LocalDate checkOutDate;
+
+
+    @PrePersist
+    public void prePersist() {
+        this.orderDate = LocalDate.now();
+    }
 
 
 

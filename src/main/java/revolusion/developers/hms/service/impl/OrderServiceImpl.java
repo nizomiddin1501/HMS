@@ -16,6 +16,7 @@ import revolusion.developers.hms.repository.OrderRepository;
 import revolusion.developers.hms.repository.RoomRepository;
 import revolusion.developers.hms.service.OrderService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,7 +57,42 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) throws OrderException {
-        return null;
+        // Convert OrderDto to Order entity
+        Order order = dtoToOrder(orderDto);
+
+        // Validate User existence
+        if (order.getUser() == null || order.getUser().getId() == null) {
+            throw new OrderException("User is required for the order.");
+        }
+
+        // Validate Room existence
+        if (order.getRoom() == null || order.getRoom().getId() == null) {
+            throw new OrderException("Room is required for the order.");
+        }
+
+        // Get Room by ID
+        Room room = roomRepository.findById(order.getRoom().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", order.getRoom().getId()));
+
+        // Check for existing orders that overlap with the requested dates
+        List<Order> existingOrders = orderRepository.findByRoomId(room.getId());
+        for (Order existingOrder : existingOrders) {
+            if ((orderDto.getCheckInDate().isBefore(existingOrder.getCheckOutDate()) ||
+                    orderDto.getCheckInDate().isEqual(existingOrder.getCheckOutDate())) &&
+                    (orderDto.getCheckOutDate().isAfter(existingOrder.getCheckInDate()) ||
+                            orderDto.getCheckOutDate().isEqual(existingOrder.getCheckInDate()))) {
+                throw new OrderException("The room is already booked for the selected dates.");
+            }
+        }
+
+        order.setRoom(room); // Set the room for the order
+        order.setOrderDate(LocalDate.now()); // Set order date to current date
+
+        // Save order
+        Order savedOrder = orderRepository.save(order);
+
+        // Convert saved entity back to DTO and return
+        return orderToDto(savedOrder);
     }
 
     @Override
@@ -66,8 +102,8 @@ public class OrderServiceImpl implements OrderService {
 
         // update order details
         existingOrder.setOrderDate(orderDto.getOrderDate());
-        existingOrder.setStatus(orderDto.getStatus());
         existingOrder.setTotalAmount(orderDto.getTotalAmount());
+        existingOrder.setStatus(orderDto.getStatus());
 
         // get Room by ID
         Room room = roomRepository.findById(orderDto.getRoomDto().getId())

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "reviews")
+@Table(name = "review")
 @Schema(description = "Review entity represents a user's review and rating of an order.")
 
 public class Review {
