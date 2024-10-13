@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class OrderDto {
 
     @Schema(description = "Date of the order",
             example = "2024-01-01")
-    private Date orderDate;
+    private LocalDate orderDate;
 
     @Schema(description = "Total amount of the order",
             example = "450.00")

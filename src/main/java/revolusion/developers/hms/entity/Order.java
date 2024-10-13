@@ -26,6 +26,11 @@ public class Order {
             required = true)
     private LocalDate orderDate;
 
+    @Column(name = "order_amount", nullable = false)
+    @Schema(description = "Total amount of the order",
+            example = "450.00")
+    private Double totalAmount;
+
     @Column(name = "status", nullable = false)
     @Schema(description = "Status of the order",
             example = "Confirmed",

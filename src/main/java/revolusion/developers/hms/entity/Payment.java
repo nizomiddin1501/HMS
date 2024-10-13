@@ -1,9 +1,12 @@
 package revolusion.developers.hms.entity;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.sql.Date;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +27,12 @@ public class Payment {
             required = true)
     private Double amount;
 
+    @Column(name = "payment_date", nullable = false)
+    @Schema(description = "Date of the payment",
+            example = "2024-01-01",
+            hidden = true)
+    private Date paymentDate;
+
     @Column(name = "payment_method", nullable = false)
     @Schema(description = "The method of payment",
             example = "Credit Card",
@@ -36,12 +45,10 @@ public class Payment {
     private Order order;
 
 
-
-
-
-
-
-
+    @PrePersist
+    public void prePersist() {
+        this.paymentDate = new Date(System.currentTimeMillis()); // Hozirgi vaqtni saqlaydi
+    }
 
 
 }

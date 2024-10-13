@@ -38,6 +38,12 @@ public class Hotel {
     private Integer starRating;
 
 
+    @Column(name = "description", nullable = false)
+    @Schema(description = "Brief description about the hotel",
+            example = "A luxury hotel located in the heart of the city.")
+    private String description;
+
+
 
 
 

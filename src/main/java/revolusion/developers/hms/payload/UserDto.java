@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,6 +44,11 @@ public class UserDto {
     @Schema(description = "Brief description about the user",
             example = "A regular hotel customer.")
     private String about;
+
+
+    @Schema(description = "Roles assigned to the user.",
+            example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
+    private Set<RoleDto> roles;
 
 
 

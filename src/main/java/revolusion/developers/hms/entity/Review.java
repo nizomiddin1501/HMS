@@ -40,6 +40,11 @@ public class Review {
     @Schema(description = "The order that the review is associated with")
     private Order order;
 
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", nullable = false)
+    @Schema(description = "The hotel that the review is related to")
+    private Hotel hotel;
+
 
 
 

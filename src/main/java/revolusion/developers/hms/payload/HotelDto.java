@@ -26,11 +26,11 @@ public class HotelDto {
     @Schema(description = "Location of the hotel",
             example = "New York, 5th Avenue",
             required = true)
-    private String location;
+    private String address;
 
     @Schema(description = "Rating of the hotel",
-            example = "4.5")
-    private Double rating;
+            example = "4")
+    private Integer starRating;
 
     @Schema(description = "Brief description about the hotel",
             example = "A luxury hotel located in the heart of the city.")

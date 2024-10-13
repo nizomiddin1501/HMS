@@ -44,7 +44,7 @@ public class User {
             example = "A frequent traveler who loves staying in luxury hotels.")
     private String about;
 
-    // Relationship to Role entity
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

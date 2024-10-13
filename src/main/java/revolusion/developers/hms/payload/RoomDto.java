@@ -17,20 +17,22 @@ public class RoomDto {
             hidden = true)
     private Long id;
 
-    @NotBlank(message = "Room type cannot be blank")
-    @Size(max = 30, message = "Room type must be less than or equal to 30 characters")
-    @Schema(description = "Type of the room",
-            example = "Luxury Suite",
+    @NotBlank(message = "Room number cannot be blank")
+    @Size(max = 10, message = "Room number must be less than or equal to 10 characters")
+    @Schema(description = "Room number",
+            example = "101",
             required = true)
-    private String type;
+    private String roomNumber;
+
+    @NotBlank(message = "Room category cannot be blank")
+    @Schema(description = "Category of the room",
+            example = "lux",
+            required = true)
+    private String category;
 
     @Schema(description = "Price per night for the room",
-            example = "150")
+            example = "150.00")
     private Double price;
-
-    @Schema(description = "Description of the room",
-            example = "A luxurious suite with sea view.")
-    private String description;
 
     @Schema(description = "Hotel associated with the room")
     private HotelDto hotelDto;

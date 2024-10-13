@@ -34,12 +34,18 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getAllUsers(int page, int size) {
         List<User> users = userRepository.findAll(PageRequest.of(page, size)).getContent();
         return users.stream()
-                .map(this::userToDto).collect(Collectors.toList());
+                .map(this::userToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<UserDto> getUserById(Long userId) throws ResourceNotFoundException {
-        return Optional.empty();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", " Id", userId));
+
+        // Convert User entity to UserDto
+        UserDto userDto = userToDto(user);
+        return Optional.ofNullable(userDto);
     }
 
     @Override
@@ -49,12 +55,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) throws ResourceNotFoundException {
-        return null;
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
+
+        // Conversion DTO to entity
+        User userDetails = dtoToUser(userDto);
+
+        // update user details
+        existingUser.setName(userDetails.getName());
+        existingUser.setEmail(userDetails.getEmail());
+        existingUser.setPassword(userDetails.getPassword());
+        existingUser.setAbout(userDetails.getAbout());
+
+        // Save updated user
+        User updatedUser = userRepository.save(existingUser);
+
+        // Convert updated user entity to DTO and return
+        return userToDto(updatedUser);
     }
 
     @Override
     public void deleteUser(Long userId) throws ResourceNotFoundException {
-
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
+        userRepository.delete(user);
     }
 
     // DTO ---> Entity
