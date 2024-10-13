@@ -24,17 +24,12 @@ public class RoomDto {
             required = true)
     private String roomNumber;
 
-    @NotBlank(message = "Room category cannot be blank")
-    @Schema(description = "Category of the room",
-            example = "lux",
+    @Schema(description = "The category of the room.",
             required = true)
-    private String category;
+    private RoomCategoryDto roomCategoryDto;
 
-    @Schema(description = "Price per night for the room",
-            example = "150.00")
-    private Double price;
-
-    @Schema(description = "Hotel associated with the room")
+    @Schema(description = "The hotel that the room belongs to.",
+            required = true)
     private HotelDto hotelDto;
 
 

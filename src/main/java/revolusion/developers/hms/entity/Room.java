@@ -24,22 +24,22 @@ public class Room {
             required = true)
     private String roomNumber;
 
-    @Column(name = "category", nullable = false)
-    @Schema(description = "Category of the room",
-            example = "lux",
-            required = true)
-    private String category;
-
-    @Column(name = "price", nullable = false)
-    @Schema(description = "Price of the room per night",
-            example = "150.00",
-            required = true)
-    private Double price;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    @Schema(description = "The category of the room")
+    private RoomCategory roomCategory;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)
     @Schema(description = "The hotel that the room belongs to")
     private Hotel hotel;
+
+
+    @Transient
+    @Schema(description = "The price of the room", example = "150.00")
+    public Double getPrice() {
+        return this.roomCategory.getPrice();
+    }
 
 
 
