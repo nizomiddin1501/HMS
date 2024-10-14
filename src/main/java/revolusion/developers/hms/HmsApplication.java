@@ -8,6 +8,19 @@ public class HmsApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(HmsApplication.class, args);
+
+
+        // for swagger documentation
+        // http://localhost:8080/swagger-ui/index.html
+
+        // my portfolio
+        // https://nizomiddin-portfolio.netlify.app/
+
+
+
+
+
+
     }
 
 }

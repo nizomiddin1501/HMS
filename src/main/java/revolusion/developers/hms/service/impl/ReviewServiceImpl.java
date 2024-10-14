@@ -4,14 +4,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import revolusion.developers.hms.entity.Review;
-import revolusion.developers.hms.entity.Role;
-import revolusion.developers.hms.entity.User;
+import revolusion.developers.hms.entity.*;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.ReviewException;
 import revolusion.developers.hms.payload.ReviewDto;
-import revolusion.developers.hms.repository.ReviewRepository;
-import revolusion.developers.hms.repository.RoomRepository;
+import revolusion.developers.hms.repository.*;
 import revolusion.developers.hms.service.ReviewService;
 
 import java.util.List;
@@ -25,11 +22,25 @@ public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewRepository reviewRepository;
 
+    private final UserRepository userRepository;
+
+    private final OrderRepository orderRepository;
+
+    private final HotelRepository hotelRepository;
+
 
     @Autowired
-    public ReviewServiceImpl(ModelMapper modelMapper, ReviewRepository reviewRepository) {
+    public ReviewServiceImpl(
+            ModelMapper modelMapper,
+            ReviewRepository reviewRepository,
+            UserRepository userRepository,
+            OrderRepository orderRepository,
+            HotelRepository hotelRepository) {
         this.modelMapper = modelMapper;
         this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.hotelRepository = hotelRepository;
     }
 
 
@@ -69,26 +80,42 @@ public class ReviewServiceImpl implements ReviewService {
             throw new ReviewException("Hotel is required for the review.");
         }
 
-        // 3. Save Review
+        // 3. Get an existing User, Order and Hotel  from the repositories
+        User user = userRepository.findById(reviewDto.getUserDto().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "Id", reviewDto.getUserDto().getId()));
+
+        Order order = orderRepository.findById(reviewDto.getOrderDto().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "Id", reviewDto.getOrderDto().getId()));
+
+        Hotel hotel = hotelRepository.findById(reviewDto.getHotelDto().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel", "Id", reviewDto.getHotelDto().getId()));
+
+        // 4. Set the retrieved entities to the review
+        review.setUser(user);
+        review.setOrder(order);
+        review.setHotel(hotel);
+
+        // 5. Save Review
         Review savedReview = reviewRepository.save(review);
 
-        // 4. Convert the saved User to DTO and return
+        // 6. Convert the saved User to DTO and return
         return reviewToDto(savedReview);
     }
 
     @Override
     public ReviewDto updateReview(Long reviewId, ReviewDto reviewDto) throws ResourceNotFoundException {
+        // 1. Get the available review
         Review existingReview = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review", " Id ", reviewId));
 
-        // update review details
+        // 2. update review details
         existingReview.setRating(reviewDto.getRating());
         existingReview.setComment(reviewDto.getComment());
 
-        // Save updated review
+        // 3. Save updated review
         Review updatedReview = reviewRepository.save(existingReview);
 
-        // Convert updated review entity to DTO and return
+        // 4. Convert updated review entity to DTO and return
         return reviewToDto(updatedReview);
     }
 

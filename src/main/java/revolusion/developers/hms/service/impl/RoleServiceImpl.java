@@ -28,7 +28,9 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Autowired
-    public RoleServiceImpl(ModelMapper modelMapper, RoleRepository roleRepository) {
+    public RoleServiceImpl(
+            ModelMapper modelMapper,
+            RoleRepository roleRepository) {
         this.modelMapper = modelMapper;
         this.roleRepository = roleRepository;
     }
@@ -77,16 +79,17 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDto updateRole(Long roleId, RoleDto roleDto) throws ResourceNotFoundException {
+        // 1. Get the available role
         Role existingRole = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", " Id ", roleId));
 
-        // update user details
+        // 2. update user details
         existingRole.setName(roleDto.getName());
 
-        // Save updated role
+        // 3. Save updated role
         Role updatedRole = roleRepository.save(existingRole);
 
-        // Convert updated role entity to DTO and return
+        // 4. Convert updated role entity to DTO and return
         return roleToDto(updatedRole);
     }
 

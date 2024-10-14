@@ -54,6 +54,10 @@ public class User {
     @Schema(description = "Roles assigned to the user.")
     private Set<Role> roles;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Schema(description = "List of payment information associated with the user.")
+    private Set<UserPayment> userPayments;
+
 
 
 

@@ -43,6 +43,20 @@ public class Hotel {
             example = "A luxury hotel located in the heart of the city.")
     private String description;
 
+    @Column(name = "balance", nullable = false)
+    @Schema(description = "The current balance of the hotel account.",
+            example = "10000.00",
+            required = true)
+    private Double balance;
+
+    @Column(name = "account_number", length = 20, nullable = false, unique = true)
+    @Schema(description = "The account number of the hotel.",
+            example = "ACCT123456",
+            required = true)
+    private String accountNumber;
+
+
+
 
 
 

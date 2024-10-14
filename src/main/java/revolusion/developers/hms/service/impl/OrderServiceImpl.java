@@ -13,6 +13,7 @@ import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.repository.OrderRepository;
+import revolusion.developers.hms.repository.PaymentRepository;
 import revolusion.developers.hms.repository.RoomRepository;
 import revolusion.developers.hms.service.OrderService;
 
@@ -30,11 +31,18 @@ public class OrderServiceImpl implements OrderService {
 
     private final RoomRepository roomRepository;
 
+    private final PaymentRepository paymentRepository;
+
     @Autowired
-    public OrderServiceImpl(ModelMapper modelMapper, OrderRepository orderRepository, RoomRepository roomRepository) {
+    public OrderServiceImpl(
+            ModelMapper modelMapper,
+            OrderRepository orderRepository,
+            RoomRepository roomRepository,
+            PaymentRepository paymentRepository) {
         this.modelMapper = modelMapper;
         this.orderRepository = orderRepository;
         this.roomRepository = roomRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -57,24 +65,24 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) throws OrderException {
-        // Convert OrderDto to Order entity
+        // 1. Convert OrderDto to Order entity
         Order order = dtoToOrder(orderDto);
 
-        // Validate User existence
+        // 2. Validate User existence
         if (order.getUser() == null || order.getUser().getId() == null) {
             throw new OrderException("User is required for the order.");
         }
 
-        // Validate Room existence
+        // 3. Validate Room existence
         if (order.getRoom() == null || order.getRoom().getId() == null) {
             throw new OrderException("Room is required for the order.");
         }
 
-        // Get Room by ID
+        // 4. Get Room by ID
         Room room = roomRepository.findById(order.getRoom().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", order.getRoom().getId()));
 
-        // Check for existing orders that overlap with the requested dates
+        // 5. Check for existing orders that overlap with the requested dates
         List<Order> existingOrders = orderRepository.findByRoomId(room.getId());
         for (Order existingOrder : existingOrders) {
             if ((orderDto.getCheckInDate().isBefore(existingOrder.getCheckOutDate()) ||
@@ -88,34 +96,35 @@ public class OrderServiceImpl implements OrderService {
         order.setRoom(room); // Set the room for the order
         order.setOrderDate(LocalDate.now()); // Set order date to current date
 
-        // Save order
+        // 7. Save order
         Order savedOrder = orderRepository.save(order);
 
-        // Convert saved entity back to DTO and return
+        // 8. Convert saved entity back to DTO and return
         return orderToDto(savedOrder);
     }
 
     @Override
     public OrderDto updateOrder(Long orderId, OrderDto orderDto) throws ResourceNotFoundException {
+        // 1. Get the available order
         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", " Id ", orderId));
 
-        // update order details
+        // 2. update order details
         existingOrder.setOrderDate(orderDto.getOrderDate());
         existingOrder.setTotalAmount(orderDto.getTotalAmount());
         existingOrder.setStatus(orderDto.getStatus());
 
-        // get Room by ID
+        // 3. get Room by ID
         Room room = roomRepository.findById(orderDto.getRoomDto().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", orderDto.getRoomDto().getId()));
 
-        // Add the updated Room to the order
+        // 4. Add the updated Room to the order
         existingOrder.setRoom(room);
 
-        // Save updated order
+        // 5. Save updated order
         Order updatedOrder = orderRepository.save(existingOrder);
 
-        // Convert updated order entity to DTO and return
+        // 6. Convert updated order entity to DTO and return
         return orderToDto(updatedOrder);
     }
 

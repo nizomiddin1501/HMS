@@ -31,13 +31,4 @@ public class RoomDto {
     @Schema(description = "The hotel that the room belongs to.",
             required = true)
     private HotelDto hotelDto;
-
-
-
-
-
-
-
-
-
 }

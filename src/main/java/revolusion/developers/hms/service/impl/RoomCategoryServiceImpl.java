@@ -4,12 +4,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.RoomCategory;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomCategoryException;
 import revolusion.developers.hms.payload.RoomCategoryDto;
-import revolusion.developers.hms.payload.RoomDto;
 import revolusion.developers.hms.repository.RoomCategoryRepository;
 import revolusion.developers.hms.service.RoomCategoryService;
 
@@ -26,7 +24,9 @@ public class RoomCategoryServiceImpl implements RoomCategoryService {
 
 
     @Autowired
-    public RoomCategoryServiceImpl(ModelMapper modelMapper, RoomCategoryRepository roomCategoryRepository) {
+    public RoomCategoryServiceImpl(
+            ModelMapper modelMapper,
+            RoomCategoryRepository roomCategoryRepository) {
         this.modelMapper = modelMapper;
         this.roomCategoryRepository = roomCategoryRepository;
     }
@@ -75,20 +75,21 @@ public class RoomCategoryServiceImpl implements RoomCategoryService {
 
     @Override
     public RoomCategoryDto updateRoomCategory(Long roomCategoryId, RoomCategoryDto roomCategoryDto) throws ResourceNotFoundException {
+        // 1. Get the available roomCategory
         RoomCategory existingRoomCategory = roomCategoryRepository.findById(roomCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("RoomCategory", " Id ", roomCategoryId));
 
-        // Convert DTO to entity
+        // 2. Convert DTO to entity
         RoomCategory roomCategoryDetails = dtoToRoomCategory(roomCategoryDto);
 
-        // update roomCategory details
+        // 3. update roomCategory details
         existingRoomCategory.setCategoryName(roomCategoryDetails.getCategoryName());
         existingRoomCategory.setPrice(roomCategoryDetails.getPrice());
 
-        // Save updated roomCategory
+        // 4. Save updated roomCategory
         RoomCategory updatedRoomCategory = roomCategoryRepository.save(existingRoomCategory);
 
-        // Convert updated user entity to DTO and return
+        // 5. Convert updated user entity to DTO and return
         return roomCategoryToDto(updatedRoomCategory);
     }
 

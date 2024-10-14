@@ -24,7 +24,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Autowired
-    public UserServiceImpl(ModelMapper modelMapper, UserRepository userRepository) {
+    public UserServiceImpl(
+            ModelMapper modelMapper,
+            UserRepository userRepository) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
     }
@@ -82,10 +84,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) throws ResourceNotFoundException {
+        // 1. Get the available user
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userId));
 
-        // update user details
+        // 2. update user details
         existingUser.setName(userDto.getName());
         existingUser.setEmail(userDto.getEmail());
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
@@ -93,10 +96,10 @@ public class UserServiceImpl implements UserService {
         }
         existingUser.setAbout(userDto.getAbout());
 
-        // Save updated user
+        // 3. Save updated user
         User updatedUser = userRepository.save(existingUser);
 
-        // Convert updated user entity to DTO and return
+        // 4. Convert updated user entity to DTO and return
         return userToDto(updatedUser);
     }
 

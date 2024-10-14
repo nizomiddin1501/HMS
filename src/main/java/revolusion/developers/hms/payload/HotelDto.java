@@ -36,6 +36,18 @@ public class HotelDto {
             example = "A luxury hotel located in the heart of the city.")
     private String description;
 
+    @Schema(description = "The current balance of the hotel account.",
+            example = "10000.00",
+            required = true)
+    private Double balance;
+
+    @NotBlank(message = "Account number cannot be blank")
+    @Size(max = 20, message = "Account number must be less than or equal to 20 characters")
+    @Schema(description = "The account number of the hotel.",
+            example = "ACCT123456",
+            required = true)
+    private String accountNumber;
+
 
 
 

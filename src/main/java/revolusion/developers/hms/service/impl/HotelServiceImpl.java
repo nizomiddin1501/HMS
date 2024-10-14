@@ -28,7 +28,9 @@ public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
 
     @Autowired
-    public HotelServiceImpl(ModelMapper modelMapper, HotelRepository hotelRepository) {
+    public HotelServiceImpl(
+            ModelMapper modelMapper,
+            HotelRepository hotelRepository) {
         this.modelMapper = modelMapper;
         this.hotelRepository = hotelRepository;
     }
@@ -77,19 +79,20 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public HotelDto updateHotel(Long hotelId, HotelDto hotelDto) throws ResourceNotFoundException {
+        // 1. Get the available hotel
         Hotel existingHotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel", " Id ", hotelId));
 
-        // update hotel details
+        // 2. update hotel details
         existingHotel.setName(hotelDto.getName());
         existingHotel.setAddress(hotelDto.getAddress());
         existingHotel.setStarRating(hotelDto.getStarRating());
         existingHotel.setDescription(hotelDto.getDescription());
 
-        // Save updated hotel
+        // 3. Save updated hotel
         Hotel updatedHotel = hotelRepository.save(existingHotel);
 
-        // Convert updated hotel entity to DTO and return
+        // 4. Convert updated hotel entity to DTO and return
         return hotelToDto(updatedHotel);
     }
 

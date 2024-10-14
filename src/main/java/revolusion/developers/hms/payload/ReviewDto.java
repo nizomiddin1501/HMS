@@ -42,10 +42,4 @@ public class ReviewDto {
             example = "HotelDto(id=1, name=Hotel Palace, category=Luxury, location=Tashkent)")
     private HotelDto hotelDto;
 
-
-
-
-
-
-
 }

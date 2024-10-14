@@ -31,9 +31,4 @@ public class RoomCategoryDto {
             example = "150.00",
             required = true)
     private Double price;
-
-
-
-
-
 }
