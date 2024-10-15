@@ -10,9 +10,12 @@ import revolusion.developers.hms.entity.Order;
 import revolusion.developers.hms.entity.Payment;
 import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.User;
+import revolusion.developers.hms.entity.status.OrderStatus;
 import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.OrderDto;
+import revolusion.developers.hms.payload.OrderUpdateRequest;
+import revolusion.developers.hms.payload.PaymentDto;
 import revolusion.developers.hms.repository.OrderRepository;
 import revolusion.developers.hms.repository.PaymentRepository;
 import revolusion.developers.hms.repository.RoomRepository;
@@ -92,26 +95,47 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
+        // 6. Set status to "Pending" as the order is just created
+        order.setOrderStatus(OrderStatus.PENDING);
+
+        // 7. Set room and date
         order.setRoom(room); // Set the room for the order
         order.setOrderDate(LocalDate.now()); // Set order date to current date
 
-        // 7. Save order
+        // 8. Save order
         Order savedOrder = orderRepository.save(order);
 
-        // 8. Convert saved entity back to DTO and return
+        // 9. Convert saved entity back to DTO and return
         return orderToDto(savedOrder);
     }
 
     @Override
-    public OrderDto updateOrder(Long orderId, OrderDto orderDto) throws ResourceNotFoundException {
+    public OrderDto updateOrder(Long orderId, OrderUpdateRequest orderUpdateRequest) throws ResourceNotFoundException {
         // 1. Get the available order
         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", " Id ", orderId));
 
         // 2. update order details
+        OrderDto orderDto = orderUpdateRequest.getOrderDto();
         existingOrder.setOrderDate(orderDto.getOrderDate());
         existingOrder.setTotalAmount(orderDto.getTotalAmount());
-        existingOrder.setStatus(orderDto.getStatus());
+
+        // 3. Set status depending on the business logic
+        PaymentDto paymentDto = orderUpdateRequest.getPaymentDto();
+        switch (paymentDto.getPaymentStatus()) {
+            case PAID:
+                existingOrder.setOrderStatus(OrderStatus.CONFIRMED);  // Agar to'lov amalga oshirilgan bo'lsa, buyurtmani tasdiqlash
+                break;
+            case FAILED:
+                existingOrder.setOrderStatus(OrderStatus.CANCELLED); // Agar to'lov rad etilgan bo'lsa, buyurtmani bekor qilish
+                break;
+            case PENDING:
+                existingOrder.setOrderStatus(OrderStatus.PENDING); // Agar to'lov hali bajarilmagan bo'lsa, holatni "Pending" deb belgilash
+                break;
+            default:
+                existingOrder.setOrderStatus(OrderStatus.PENDING); // Boshqa holatlar uchun, holatni "Pending" deb belgilash
+                break;
+        }
 
         // 3. get Room by ID
         Room room = roomRepository.findById(orderDto.getRoomDto().getId())

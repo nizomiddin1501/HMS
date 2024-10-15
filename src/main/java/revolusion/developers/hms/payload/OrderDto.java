@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import revolusion.developers.hms.entity.status.OrderStatus;
 
 import java.time.LocalDate;
 
@@ -27,11 +28,6 @@ public class OrderDto {
             example = "450.00")
     private Double totalAmount;
 
-    @NotBlank(message = "Status cannot be blank")
-    @Schema(description = "Status of the order",
-            example = "Confirmed")
-    private String status;
-
     @Schema(description = "Room associated with the order")
     private RoomDto roomDto;
 
@@ -49,6 +45,9 @@ public class OrderDto {
             example = "2024-10-14",
             required = true)
     private LocalDate checkOutDate;
+
+    @Schema(description = "The status of the order", example = "PENDING")
+    private OrderStatus orderStatus;
 
 
 

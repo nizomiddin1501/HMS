@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import revolusion.developers.hms.entity.status.PaymentStatus;
 
 import java.sql.Date;
 
@@ -44,11 +45,19 @@ public class Payment {
     @Schema(description = "The order that the payment belongs to")
     private Order order;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false)
+    @Schema(description = "The status of the payment", example = "PAID")
+    private PaymentStatus paymentStatus;
+
 
 
     @PrePersist
     public void prePersist() {
         this.paymentDate = new Date(System.currentTimeMillis());
+        if (this.paymentStatus == null) {
+            this.paymentStatus = PaymentStatus.PENDING;
+        }
     }
 
 

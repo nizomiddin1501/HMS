@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.OrderDto;
+import revolusion.developers.hms.payload.OrderUpdateRequest;
+import revolusion.developers.hms.payload.PaymentDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +23,7 @@ public interface OrderService {
     OrderDto createOrder(OrderDto orderDto) throws OrderException;
 
     // update an existing order
-    OrderDto updateOrder(Long orderId, OrderDto orderDto) throws ResourceNotFoundException;
+    OrderDto updateOrder(Long orderId, OrderUpdateRequest orderUpdateRequest) throws ResourceNotFoundException;
 
     // delete a order
     void deleteOrder(Long orderId) throws ResourceNotFoundException;

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import revolusion.developers.hms.entity.status.PaymentStatus;
 
 import java.sql.Date;
 
@@ -37,6 +38,10 @@ public class PaymentDto {
 
     @Schema(description = "Order associated with the payment")
     private OrderDto orderDto;
+
+
+    @Schema(description = "The status of the payment", example = "PAID")
+    private PaymentStatus paymentStatus;
 
 
 

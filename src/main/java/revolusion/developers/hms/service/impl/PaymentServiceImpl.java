@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.*;
+import revolusion.developers.hms.entity.status.OrderStatus;
+import revolusion.developers.hms.entity.status.PaymentStatus;
 import revolusion.developers.hms.exceptions.PaymentException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.PaymentDto;
@@ -81,13 +83,19 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findById(paymentDto.getOrderDto().getId())
                 .orElseThrow(() -> new PaymentException("Buyurtma topilmadi."));
 
-        // 5. Set the order to Payment
-        payment.setOrder(order); // To'lovni buyurtma bilan bog'lash
+        // 5. Ensure the order status is pending
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
+            throw new PaymentException("Order must be pending to create a payment.");
+        }
 
-        // 6. Save payment
+        // 6. Set the order to Payment and paymentStatus
+        payment.setOrder(order); // To'lovni buyurtma bilan bog'lash
+        payment.setPaymentStatus(PaymentStatus.PENDING); // Set payment status to Pending
+
+        // 7. Save payment
         Payment savedPayment = paymentRepository.save(payment);
 
-        // 7. Convert the saved Payment to DTO and return
+        // 8. Convert the saved Payment to DTO and return
         return paymentToDto(savedPayment);
     }
 
@@ -110,6 +118,10 @@ public class PaymentServiceImpl implements PaymentService {
         // 3. Get userPayment details
         UserPayment userPayment = userPaymentRepository.findByUserId(user.getId());
         if (userPayment == null) {
+            //
+            existingPayment.setPaymentStatus(PaymentStatus.FAILED); // To'lov statusini FAILED ga o'zgartirish
+            paymentRepository.save(existingPayment); // Yangilangan to'lovni saqlash
+            //
             throw new PaymentException("Foydalanuvchi to'lov ma'lumotlari topilmadi.");
         }
 
@@ -119,7 +131,11 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 5. Checking user balance
         if (userPayment.getBalance() < existingPayment.getAmount()) {
-            throw new PaymentException("Yetarli balans mavjud emas.");
+            //
+            existingPayment.setPaymentStatus(PaymentStatus.FAILED); // To'lov statusini FAILED ga o'zgartirish
+            paymentRepository.save(existingPayment); // Yangilangan to'lovni saqlash
+            //
+            throw new PaymentException("Balance da yetarli mablag' mavjud emas.");
         }
 
         // 6. Update user balance
@@ -134,10 +150,13 @@ public class PaymentServiceImpl implements PaymentService {
         existingPayment.setAmount(paymentDto.getAmount());
         existingPayment.setPaymentMethod(paymentDto.getPaymentMethod());
 
-        // 9. Save payment
+        // 9. Update payment status to PAID if successful
+        existingPayment.setPaymentStatus(PaymentStatus.PAID); // Set to Paid if the payment is successful
+
+        // 10. Save payment
         Payment updatedPayment = paymentRepository.save(existingPayment);
 
-        // 10. Convert the saved Payment to DTO and return
+        // 11. Convert the saved Payment to DTO and return
         return paymentToDto(updatedPayment);
     }
 

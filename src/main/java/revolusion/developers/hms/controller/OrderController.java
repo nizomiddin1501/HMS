@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.OrderDto;
+import revolusion.developers.hms.payload.OrderUpdateRequest;
+import revolusion.developers.hms.payload.PaymentDto;
 import revolusion.developers.hms.service.OrderService;
 import java.util.Optional;
 
@@ -130,13 +132,13 @@ public class OrderController {
 
 
     /**
-     * Update the details of an existing order using the provided OrderDto.
+     * Update the details of an existing order using the provided OrderUpdateRequest.
      *
-     * This method accepts the order's ID and a DTO containing updated order details.
+     * This method accepts the order's ID and a DTO containing updated order and payment details.
      * It updates the order record if it exists and returns the updated OrderDto object.
      *
      * @param id the ID of the order to be updated
-     * @param orderDto the DTO containing updated order details
+     * @param orderUpdateRequest the DTO containing updated order and payment details
      * @return a ResponseEntity containing a CustomApiResponse with the updated OrderDto,
      *         or a NOT FOUND response if the order does not exist
      */
@@ -144,12 +146,12 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @ApiResponse(responseCode = "404", description = "Order not found")
     @PutMapping("/{id}")
-    public ResponseEntity<CustomApiResponse<OrderDto>>  updateOrder(
+    public ResponseEntity<CustomApiResponse<OrderDto>> updateOrder(
             @PathVariable Long id,
-            @RequestBody OrderDto orderDto) {
+            @RequestBody OrderUpdateRequest orderUpdateRequest) {
         Optional<OrderDto> orderDtoOptional = orderService.getOrderById(id);
         if (orderDtoOptional.isPresent()) {
-            OrderDto updatedOrder = orderService.updateOrder(id, orderDto);
+            OrderDto updatedOrder = orderService.updateOrder(id, orderUpdateRequest);
             CustomApiResponse<OrderDto> response = new CustomApiResponse<>(
                     "Order updated successfully",
                     true,

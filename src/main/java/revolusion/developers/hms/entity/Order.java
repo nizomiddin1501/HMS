@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import revolusion.developers.hms.entity.status.OrderStatus;
 
 import java.time.LocalDate;
 
@@ -31,11 +32,6 @@ public class Order {
             example = "450.00")
     private Double totalAmount;
 
-    @Column(name = "status", nullable = false)
-    @Schema(description = "Status of the order",
-            example = "Confirmed",
-            required = true)
-    private String status;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -59,10 +55,18 @@ public class Order {
             required = true)
     private LocalDate checkOutDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", nullable = false)
+    @Schema(description = "The status of the order", example = "PENDING")
+    private OrderStatus orderStatus;
+
 
     @PrePersist
     public void prePersist() {
         this.orderDate = LocalDate.now();
+        if (this.orderStatus == null) {
+            this.orderStatus = OrderStatus.PENDING;
+        }
     }
 
 
