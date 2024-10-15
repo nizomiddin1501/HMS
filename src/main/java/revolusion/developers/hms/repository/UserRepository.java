@@ -8,11 +8,11 @@ public interface UserRepository extends BaseRepository<User, Long> {
 
 
     // Name exists check
-    @Query(value = "select count(*) > 0 from users u where u.name = :name", nativeQuery = true)
+    @Query(value = "select count(*) > 0 from users u where u.user_name = :name", nativeQuery = true)
     boolean existsByName(@Param("name") String name);
 
     // Email exists check
-    @Query(value = "select count(*) > 0 from users u where u.email = :email", nativeQuery = true)
+    @Query(value = "select count(*) > 0 from users u where u.user_email = :email", nativeQuery = true)
     boolean existsByEmail(@Param("email") String email);
 
 

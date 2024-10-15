@@ -14,7 +14,8 @@ import java.sql.Date;
 @Schema(description = "Payment DTO is used for transferring payment data across the application.")
 public class PaymentDto {
 
-    @Schema(description = "Unique ID of the payment", example = "1", hidden = true)
+    @Schema(description = "Unique ID of the payment",
+            example = "1")
     private Long id;
 
     @NotBlank(message = "Amount cannot be blank")

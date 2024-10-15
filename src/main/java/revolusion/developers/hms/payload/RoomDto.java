@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 public class RoomDto {
 
     @Schema(description = "Unique ID of the room",
-            example = "1",
-            hidden = true)
+            example = "1")
     private Long id;
 
     @NotBlank(message = "Room number cannot be blank")

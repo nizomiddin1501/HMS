@@ -15,14 +15,13 @@ public class RoomCategoryDto {
 
 
     @Schema(description = "Unique ID of the room category",
-            example = "1",
-            hidden = true)
+            example = "1")
     private Long id;
 
     @NotBlank(message = "Category name cannot be blank")
     @Size(max = 50, message = "Category name must be less than or equal to 50 characters")
     @Schema(description = "Name of the room category",
-            example = "lux",
+            example = "LUX",
             required = true)
     private String categoryName;
 

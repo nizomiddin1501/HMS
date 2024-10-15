@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 public class RoleDto {
 
     @Schema(description = "Unique ID of the role",
-            example = "1",
-            hidden = true)
+            example = "1")
     private Long id;
 
     @NotBlank(message = "Role name cannot be blank")

@@ -9,9 +9,9 @@ import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.entity.UserPayment;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserPaymentException;
-import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.payload.UserPaymentDto;
 import revolusion.developers.hms.repository.UserPaymentRepository;
+import revolusion.developers.hms.repository.UserRepository;
 import revolusion.developers.hms.service.UserPaymentService;
 
 import java.util.Optional;
@@ -21,11 +21,17 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
     private final ModelMapper modelMapper;
     private final UserPaymentRepository userPaymentRepository;
+    private final UserRepository userRepository;
 
 
     @Autowired
-    public UserPaymentServiceImpl(ModelMapper modelMapper, UserPaymentRepository userPaymentRepository) {
+    public UserPaymentServiceImpl(
+            ModelMapper modelMapper,
+            UserRepository userRepository,
+            UserPaymentRepository userPaymentRepository
+    ) {
         this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
         this.userPaymentRepository = userPaymentRepository;
     }
 
@@ -48,7 +54,32 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
     @Override
     public UserPaymentDto createUserPayment(UserPaymentDto userPaymentDto) throws UserPaymentException {
-        return null;
+        // 1. Convert DTO to Entity
+        UserPayment userPayment = dtoToUserPayment(userPaymentDto);
+
+        // 2. Perform business checks on the entity
+        if (userPayment.getAccountNumber() == null || userPayment.getAccountNumber().isEmpty()) {
+            throw new UserPaymentException("UserPayment accountNumber cannot be null or empty");
+        }
+
+        // 3. Checking that the userPayment accountNumber column does not exist
+        boolean exists = userPaymentRepository.existsByAccountNumber(userPayment.getAccountNumber());
+        if (exists) {
+            throw new UserPaymentException("UserPayment with this accountNumber already exists");
+        }
+
+        // 4. Get an existing RoomCategory and Hotel from repositories
+        User existingUser = userRepository.findById(userPaymentDto.getUserDto().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", userPaymentDto.getUserDto().getId()));
+
+        // 5. Set User to userPayment
+        userPayment.setUser(existingUser);
+
+        // 6. Save UserPayment
+        UserPayment savedUserPayment = userPaymentRepository.save(userPayment);
+
+        // 7. Convert the saved UserPayment to DTO and return
+        return userPaymentToDto(savedUserPayment);
     }
 
 
@@ -58,12 +89,9 @@ public class UserPaymentServiceImpl implements UserPaymentService {
         UserPayment existingUserPayment = userPaymentRepository.findById(userPaymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("UserPayment", " Id ", userPaymentId));
 
-        // Conversion DTO to entity
-        UserPayment userPaymentDetails = dtoToUserPayment(userPaymentDto);
-
         // update userPayment details
-        existingUserPayment.setBalance(userPaymentDetails.getBalance());
-        existingUserPayment.setAccountNumber(userPaymentDetails.getAccountNumber());
+        existingUserPayment.setBalance(userPaymentDto.getBalance());
+        existingUserPayment.setAccountNumber(userPaymentDto.getAccountNumber());
 
         // Save updated userPayment
         UserPayment updatedUserPayment = userPaymentRepository.save(existingUserPayment);

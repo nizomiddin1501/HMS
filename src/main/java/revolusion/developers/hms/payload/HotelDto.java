@@ -12,19 +12,20 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Hotel DTO is used for transferring hotel data across the application.")
 public class HotelDto {
 
-    @Schema(description = "Unique ID of the hotel", example = "1", hidden = true)
+    @Schema(description = "Unique ID of the hotel",
+            example = "1")
     private Long id;
 
     @NotBlank(message = "Hotel name cannot be blank")
     @Size(max = 50, message = "Hotel name must be less than or equal to 50 characters")
     @Schema(description = "Name of the hotel",
-            example = "Grand Plaza",
+            example = "Hyatt",
             required = true)
     private String name;
 
     @NotBlank(message = "Location cannot be blank")
     @Schema(description = "Location of the hotel",
-            example = "New York, 5th Avenue",
+            example = "Tashkent, Yunusabad 17",
             required = true)
     private String address;
 

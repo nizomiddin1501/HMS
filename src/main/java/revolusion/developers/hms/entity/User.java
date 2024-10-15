@@ -18,10 +18,11 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden = true)
+    @Schema(description = "Unique ID of the user",
+            example = "1")
     private Long id;
 
-    @Column(name = "user_name", length = 20, nullable = false)
+    @Column(name = "user_name", length = 30, nullable = false)
     @Schema(description = "Name of the user",
             example = "Nizomiddin Mirzanazarov",
             required = true)
@@ -29,7 +30,7 @@ public class User {
 
     @Column(name = "user_email", length = 30, nullable = false, unique = true)
     @Schema(description = "Email address of the user",
-            example = "johndoe@example.com",
+            example = "nizomiddin@gmail.com",
             required = true)
     private String email;
 

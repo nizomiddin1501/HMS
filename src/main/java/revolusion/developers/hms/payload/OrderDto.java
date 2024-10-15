@@ -15,7 +15,8 @@ import java.time.LocalDate;
 public class OrderDto {
 
 
-    @Schema(description = "Unique ID of the order", example = "1", hidden = true)
+    @Schema(description = "Unique ID of the order",
+            example = "1")
     private Long id;
 
     @Schema(description = "Date of the order",

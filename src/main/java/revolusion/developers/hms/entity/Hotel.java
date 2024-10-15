@@ -21,7 +21,7 @@ public class Hotel {
 
     @Column(name = "hotel_name", length = 50, nullable = false)
     @Schema(description = "Name of the hotel",
-            example = "Grand Hotel",
+            example = "Hyatt",
             required = true)
     private String name;
 

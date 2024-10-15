@@ -15,7 +15,8 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Review DTO is used for transferring review data across the application.")
 public class ReviewDto {
 
-    @Schema(description = "Unique ID of the review", example = "1", hidden = true)
+    @Schema(description = "Unique ID of the review",
+            example = "1")
     private Long id;
 
     @Min(value = 1, message = "Rating must be at least 1")
@@ -39,7 +40,7 @@ public class ReviewDto {
     private OrderDto orderDto;
 
     @Schema(description = "Hotel associated with the review",
-            example = "HotelDto(id=1, name=Hotel Palace, category=Luxury, location=Tashkent)")
+            example = "HotelDto(id=1, name=Hyatt, category=LUX, location=Tashkent)")
     private HotelDto hotelDto;
 
 }

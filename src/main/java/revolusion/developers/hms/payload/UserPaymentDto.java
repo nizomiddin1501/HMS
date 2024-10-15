@@ -15,8 +15,7 @@ public class UserPaymentDto {
 
 
     @Schema(description = "Unique ID of the payment",
-            example = "1",
-            hidden = true)
+            example = "1")
     private Long id;
 
     @NotNull(message = "Balance cannot be null")

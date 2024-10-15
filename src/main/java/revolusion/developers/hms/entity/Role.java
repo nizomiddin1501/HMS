@@ -16,7 +16,8 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden = true)
+    @Schema(description = "Unique ID of the role",
+            example = "1")
     private Long id;
 
     @Column(name = "role_name", nullable = false, unique = true)

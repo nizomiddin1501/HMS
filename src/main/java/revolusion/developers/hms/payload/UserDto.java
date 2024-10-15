@@ -16,12 +16,11 @@ import java.util.Set;
 public class UserDto {
 
     @Schema(description = "Unique ID of the user",
-            example = "1",
-            hidden = true)
+            example = "1")
     private Long id;
 
     @NotBlank(message = "Name cannot be blank")
-    @Size(max = 20, message = "Name must be less than or equal to 20 characters")
+    @Size(max = 30, message = "Name must be less than or equal to 30 characters")
     @Schema(description = "Name of the user",
             example = "Nizomiddin Mirzanazarov",
             required = true)
@@ -30,7 +29,7 @@ public class UserDto {
     @NotBlank(message = "Email cannot be blank")
     @Email(message = "Email should be valid")
     @Schema(description = "Email address of the user",
-            example = "nizomiddin@example.com",
+            example = "nizomiddin@gmail.com",
             required = true)
     private String email;
 
@@ -46,8 +45,8 @@ public class UserDto {
     private String about;
 
 
-    @Schema(description = "Roles assigned to the user.",
-            example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
+    @Schema(description = "Roles assigned to the user.")
+  //          example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
     private Set<RoleDto> roles;
 
 
