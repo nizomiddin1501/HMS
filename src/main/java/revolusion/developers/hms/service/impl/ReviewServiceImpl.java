@@ -2,6 +2,7 @@ package revolusion.developers.hms.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.*;
@@ -45,11 +46,9 @@ public class ReviewServiceImpl implements ReviewService {
 
 
     @Override
-    public List<ReviewDto> getAllReviews(int page, int size) {
-        List<Review> reviews = reviewRepository.findAll(PageRequest.of(page, size)).getContent();
-        return reviews.stream()
-                .map(this::reviewToDto)
-                .collect(Collectors.toList());
+    public Page<ReviewDto> getAllReviews(int page, int size) {
+        Page<Review> reviewsPage = reviewRepository.findAll(PageRequest.of(page, size));
+        return reviewsPage.map(this::reviewToDto);
     }
 
     @Override

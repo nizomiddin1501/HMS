@@ -2,6 +2,7 @@ package revolusion.developers.hms.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Hotel;
@@ -37,11 +38,9 @@ public class HotelServiceImpl implements HotelService {
 
 
     @Override
-    public List<HotelDto> getAllHotels(int page, int size) {
-        List<Hotel> hotels = hotelRepository.findAll(PageRequest.of(page, size)).getContent();
-        return hotels.stream()
-                .map(this::hotelToDto)
-                .collect(Collectors.toList());
+    public Page<HotelDto> getAllHotels(int page, int size) {
+        Page<Hotel> hotelsPage = hotelRepository.findAll(PageRequest.of(page, size));
+        return hotelsPage.map(this::hotelToDto);
     }
 
     @Override

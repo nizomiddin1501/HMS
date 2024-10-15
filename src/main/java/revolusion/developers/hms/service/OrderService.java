@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service;
 
+import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.OrderDto;
@@ -11,7 +12,7 @@ public interface OrderService {
 
 
     // get all orders using pagination
-    List<OrderDto> getAllOrders(int page, int size);
+    Page<OrderDto> getAllOrders(int page, int size);
 
     // get order by ID
     Optional<OrderDto> getOrderById(Long orderId) throws ResourceNotFoundException;

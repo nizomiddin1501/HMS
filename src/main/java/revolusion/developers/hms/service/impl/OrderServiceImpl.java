@@ -3,6 +3,7 @@ package revolusion.developers.hms.service.impl;
 import org.aspectj.weaver.ast.Or;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Order;
@@ -46,11 +47,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDto> getAllOrders(int page, int size) {
-        List<Order> orders = orderRepository.findAll(PageRequest.of(page, size)).getContent();
-        return orders.stream()
-                .map(this::orderToDto)
-                .collect(Collectors.toList());
+    public Page<OrderDto> getAllOrders(int page, int size) {
+        Page<Order> ordersPage = orderRepository.findAll(PageRequest.of(page, size));
+        return ordersPage.map(this::orderToDto);
     }
 
     @Override

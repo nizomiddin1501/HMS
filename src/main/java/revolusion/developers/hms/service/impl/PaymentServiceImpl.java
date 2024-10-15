@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +46,9 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public List<PaymentDto> getAllPayments(int page, int size) {
-        List<Payment> payments = paymentRepository.findAll(PageRequest.of(page, size)).getContent();
-        return payments.stream()
-                .map(this::paymentToDto)
-                .collect(Collectors.toList());
+    public Page<PaymentDto> getAllPayments(int page, int size) {
+        Page<Payment> paymentsPage = paymentRepository.findAll(PageRequest.of(page, size));
+        return paymentsPage.map(this::paymentToDto);
     }
 
     @Override

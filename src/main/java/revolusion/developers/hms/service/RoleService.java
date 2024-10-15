@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service;
 
+import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoleException;
 import revolusion.developers.hms.payload.RoleDto;
@@ -13,7 +14,7 @@ public interface RoleService {
 
 
     // get all roles using pagination
-    List<RoleDto> getAllRoles(int page, int size);
+    Page<RoleDto> getAllRoles(int page, int size);
 
     // get role by ID
     Optional<RoleDto> getRoleById(Long roleId) throws ResourceNotFoundException;

@@ -2,6 +2,7 @@ package revolusion.developers.hms.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Role;
@@ -37,11 +38,9 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public List<RoleDto> getAllRoles(int page, int size) {
-        List<Role> roles = roleRepository.findAll(PageRequest.of(page, size)).getContent();
-        return roles.stream()
-                .map(this::roleToDto)
-                .collect(Collectors.toList());
+    public Page<RoleDto> getAllRoles(int page, int size) {
+        Page<Role> rolesPage = roleRepository.findAll(PageRequest.of(page, size));
+        return rolesPage.map(this::roleToDto);
     }
 
     @Override

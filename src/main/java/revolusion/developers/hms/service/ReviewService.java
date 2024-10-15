@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service;
 
+import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.ReviewException;
 import revolusion.developers.hms.payload.ReviewDto;
@@ -11,7 +12,7 @@ public interface ReviewService {
 
 
     // get all reviews using pagination
-    List<ReviewDto> getAllReviews(int page, int size);
+    Page<ReviewDto> getAllReviews(int page, int size);
 
     // get review by ID
     Optional<ReviewDto> getReviewById(Long reviewId) throws ResourceNotFoundException;

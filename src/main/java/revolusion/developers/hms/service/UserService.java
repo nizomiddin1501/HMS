@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service;
 
+import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.UserDto;
@@ -11,7 +12,7 @@ public interface UserService {
 
 
     // get all users using pagination
-    List<UserDto> getAllUsers(int page, int size);
+    Page<UserDto> getAllUsers(int page, int size);
 
     // get user by ID
     Optional<UserDto> getUserById(Long userId) throws ResourceNotFoundException;

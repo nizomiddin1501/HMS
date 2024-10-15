@@ -2,12 +2,15 @@ package revolusion.developers.hms.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.RoomCategory;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomCategoryException;
 import revolusion.developers.hms.payload.RoomCategoryDto;
+import revolusion.developers.hms.payload.RoomDto;
 import revolusion.developers.hms.repository.RoomCategoryRepository;
 import revolusion.developers.hms.service.RoomCategoryService;
 
@@ -33,11 +36,9 @@ public class RoomCategoryServiceImpl implements RoomCategoryService {
 
 
     @Override
-    public List<RoomCategoryDto> getAllRoomCategories(int page, int size) {
-        List<RoomCategory> roomCategories = roomCategoryRepository.findAll(PageRequest.of(page, size)).getContent();
-        return roomCategories.stream()
-                .map(this::roomCategoryToDto)
-                .collect(Collectors.toList());
+    public Page<RoomCategoryDto> getAllRoomCategories(int page, int size) {
+        Page<RoomCategory> roomCategoryPages = roomCategoryRepository.findAll(PageRequest.of(page, size));
+        return roomCategoryPages.map(this::roomCategoryToDto);
     }
 
     @Override

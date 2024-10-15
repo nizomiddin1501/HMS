@@ -2,6 +2,7 @@ package revolusion.developers.hms.service.impl;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.User;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final ModelMapper modelMapper;
-
     private final UserRepository userRepository;
 
 
@@ -33,11 +33,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserDto> getAllUsers(int page, int size) {
-        List<User> users = userRepository.findAll(PageRequest.of(page, size)).getContent();
-        return users.stream()
-                .map(this::userToDto)
-                .collect(Collectors.toList());
+    public Page<UserDto> getAllUsers(int page, int size) {
+        Page<User> usersPage = userRepository.findAll(PageRequest.of(page, size));
+        return usersPage.map(this::userToDto);
     }
 
     @Override

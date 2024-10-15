@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service;
 
+import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.PaymentException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.PaymentDto;
@@ -11,7 +12,7 @@ import java.util.Optional;
 public interface PaymentService {
 
     // get all payments using pagination
-    List<PaymentDto> getAllPayments(int page, int size);
+    Page<PaymentDto> getAllPayments(int page, int size);
 
     // get payment by ID
     Optional<PaymentDto> getPaymentById(Long paymentId) throws ResourceNotFoundException;

@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service;
 
+import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.payload.RoomDto;
@@ -10,7 +11,7 @@ import java.util.Optional;
 public interface RoomService {
 
     // get all rooms using pagination
-    List<RoomDto> getAllRooms(int page, int size);
+    Page<RoomDto> getAllRooms(int page, int size);
 
     // get room by ID
     Optional<RoomDto> getRoomById(Long roomId) throws ResourceNotFoundException;

@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service;
 
+import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.HotelException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.HotelDto;
@@ -10,7 +11,7 @@ import java.util.Optional;
 public interface HotelService {
 
     // get all hotels using pagination
-    List<HotelDto> getAllHotels(int page, int size);
+    Page<HotelDto> getAllHotels(int page, int size);
 
     // get hotel by ID
     Optional<HotelDto> getHotelById(Long hotelId) throws ResourceNotFoundException;
