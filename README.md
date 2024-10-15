@@ -1,99 +1,217 @@
-# Hotel Management System
+**Hotel Management System**
+**Overview**
+Hotel Management System is a web application for hotels to manage various operations like booking, user management, payment processing and order tracking. The system provides interfaces for users, rooms and reservations, as well as the ability to manage payments. This project includes role-based access control (RBAC) and comprehensive administrative functions for efficient hotel business management.
 
-This project is an **Hotel Management System** developed using **Spring Boot** and **PostgreSQL**. The system provides APIs for managing employees, salary calculations, and report generation. It also includes Swagger for API documentation.
+**Features**
+User Management:
 
-## Table of Contents
-- [Features](#features)
-- [Technologies](#technologies)
-- [Setup Instructions](#setup-instructions)
-- [Running the Application](#running-the-application)
-- [API Documentation](#api-documentation)
-- [Calculation Types](#calculation-types)
-- [Contact](#contact)
+Registration and login functionality for users.
+Profile management (updating user information).
+Role-based access control for administrators and general users.
+Room Management:
 
-## Features
+View available rooms.
+Reservation, renewal and cancellation of rooms.
+Manage rooms for administrators (CRUD operations).
+Order Management:
 
-- **CRUD Operations**: Create, read, update, and delete employee data.
-- **Salary Calculations**: Generate reports based on salary, pension, award, and vacation.
-- **Reporting**: Retrieve reports about employee salary, region-based work, and more.
-- **Swagger Integration**: Automatically generated API documentation.
-- **Database Support**: PostgreSQL for persistent data storage.
+Create a new order (booking).
+Update and cancel order details.
+Order status management (PENDING, CONFIRMED, CANCELED).
+Integration with the payment system.
+Payment System:
 
-## Technologies
+Payment processing (PENDING, PAID, FAILED, REFUNDED states).
+Order confirmation after successful payment.
+Automatic order cancellation in case of payment failure.
+Booking Management:
 
-- **Java 17**
-- **Spring Boot** (Backend framework)
-- **PostgreSQL** (Database)
-- **Swagger** (API documentation)
-- **Maven** (Build tool)
-- **RESTful API** (For communication between client and server)
+Choose check-in and check-out dates.
+Real-time monitoring of room availability.
+Summary of bookings for users.
+Administrative Dashboard:
 
-## Setup Instructions
+Management of rooms, users and orders.
+View detailed reports on bookings and payments.
 
-### Prerequisites
+**Technology Stack**
+Backend:
 
-Ensure you have the following installed:
-- **Java 17**
-- **PostgreSQL**
-- **Maven**
+Java (Spring Boot framework)
+Hibernate (ORM for database handling)
+JPA (Java Persistence API for database interaction)
+Maven (Build tool)
+ 
+Database:
 
-### Database Setup
+PostgreSQL (Relational database management system)
+APIs:
 
-1. Create a PostgreSQL database:
-   ```sql
-   CREATE DATABASE employee_management;
+Swagger (API documentation and testing)
+Tools and Libraries:
 
-2. Update your application.properties file with the correct database credentials:
+Lombok (To reduce boilerplate code)
+Spring Security (For user authentication and authorization)
 
-spring.application.name=employee
-spring.datasource.url=jdbc:postgresql://localhost:5432/employee_management
-spring.datasource.username=postgres
-spring.datasource.password=1234
-spring.datasource.driver-class-name=org.postgresql.Driver
-springdoc.swagger-ui.enabled=true
-spring.jpa.hibernate.ddl-auto=update
+**Project Structure**
 
-### Running the Application
+hotel-management-system/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── revolusion/developers/hms/            # Project source code
+│   │   │       ├── config/                           # Configuration classes for security and application settings
+│   │   │       ├── controller/                       # REST Controllers for handling incoming API requests
+│   │   │       ├── entity/                           # JPA Entity classes (Order, Room, Payment, User, etc.)
+│   │   │       ├── exceptions/                       # Custom exceptions for error handling
+│   │   │       ├── payload/                          # Data Transfer Objects (DTOs) for passing data between layers
+│   │   │       ├── repository/                       # Data access layer for database interaction
+│   │   │       ├── service/                          # Business logic for handling core application operations
+│   │   └── resources/
+│   │       ├── static/                               # Static resources (CSS, JS, images, etc.)
+│   │       ├── templates/                            # Thymeleaf HTML templates for front-end views
+│   │       ├── application.properties                # Application configuration properties
+│   └── test/
+│       └── java/                                     # Test cases for controllers, services, and repositories
+│
+└── README.md                                         # Project documentation and instructions
 
-1. Clone the repository:
 
-git clone https://github.com/nizomiddin1501/employee_management
-cd employee-management
+**Entities and Operations**
 
-2. Install the dependencies and build the project:
+1. User Entity
+2. UserPayment Entity
+3. Hotel
+4. Room
+5. RoomCategory
+6. Role
+7. Review
+8. Order
+9. Payment
+ ****Order and Payment Flow****
+**Order Creation:**
+User selects a room, sets check-in and check-out dates, and places an order.
+Order status is set to PENDING.
 
-mvn clean install
+**Payment Creation:**
+After creating an order, a payment is created with status PENDING.\
 
-3. Run the Spring Boot application:
+**Payment Update:**
+rPayment status is updated to PAID or FAILED based on the payment processing result.
+If payment is PAID, order status is updated to CONFIRMED.
+If payment is FAILED, order status is updated to CANCELLED.
 
-mvn spring-boot:run
+**Order Completion:**
+Once the stay is completed, order status can be updated to COMPLETED.
 
-4. The application will be available at http://localhost:8080.
-
-### API Documentation
-
-The API documentation is available via Swagger. Once the application is running, navigate to the following URL to view the Swagger UI:
-
+**APIs**
+The project is well-documented using Swagger. You can explore all available APIs through the following Swagger documentation URL:
 http://localhost:8080/swagger-ui/index.html
 
+**API Endpoints:**
+1. User API:
+GET /api/users/{id}: Get User by ID
+PUT /api/users/{id}: Update user
+DELETE /api/users/{id}: Delete User
+GET /api/users: Get all Users with Pagination
+POST /api/users: Create a new User
 
-Swagger UI provides an interactive interface for testing the APIs. You can view all available endpoints, their descriptions, and test them directly from the browser.
+2. UserPayment API:
+GET /api/userPayments/{id}: Get UserPayment by ID
+PUT /api/userPayments/{id}: Update userPayment
+DELETE /api/userPayments/{id}: Delete UserPayment
+GET /api/userPayments: Get all UserPayments with Pagination
+POST /api/userPayments: Create a new UserPayment
 
-### Calculation Types
+3. Room API:
+GET /api/rooms/{id}: Get Room by ID
+PUT /api/rooms/{id}: Update room
+DELETE /api/rooms/{id}: Delete Room
+GET /api/rooms: Get all Rooms with Pagination
+POST /api/rooms: Create a new Room
 
-The system supports the following calculation types for employees:
+4. RoomCategory API: 
+GET /api/roomCategories/{id}: Get RoomCategory by ID
+PUT /api/roomCategories/{id}: Update roomCategory
+DELETE /api/roomCategories/{id}: Delete RoomCategory
+GET /api/roomCategories: Get all RoomCategories with Pagination
+POST /api/roomCategories: Create a new RoomCategory
 
-SALARY: Employee's monthly salary.
-PENSION: Pension payments for retired employees.
-AWARD: Awards or bonuses given to employees.
-VACATION: Payments for employee vacations.
+5. Role API:
+GET /api/roles/{id}: Get Role by ID
+PUT /api/roles/{id}: Update role
+DELETE /api/roles/{id}: Delete Role
+GET /api/roles: Get all Roles with Pagination
+POST /api/roles: Create a new Role
 
+6. Review API:
+GET /api/reviews/{id}: Get Review by ID
+PUT /api/reviews/{id}: Update review
+DELETE /api/reviews/{id}: Delete Review
+GET /api/reviews: Get all Reviews with Pagination
+POST /api/reviews: Create a new Review
 
+7. Payment API:
+GET /api/payments/{id}: Get Payment by ID
+PUT /api/payments/{id}: Update payment
+DELETE /api/payments/{id}: Delete Payment
+GET /api/payments: Get all Payments with Pagination
+POST /api/payments: Create a new Payment
 
-### Contact
+8. Order API:
+GET /api/orders/{id}: Get Order by ID
+PUT /api/orders/{id}: Update order
+DELETE /api/orders/{id}: Delete Order
+GET /api/orders: Get all Orders with Pagination
+POST /api/orders: Create a new Order
 
-For any inquiries or issues, feel free to contact:
+9. Hotel API:
+GET /api/hotels/{id}: Get Hotel by ID
+PUT /api/hotels/{id}: Update hotel
+DELETE /api/hotels/{id}: Delete Hotel
+GET /api/hotels: Get all Hotels with Pagination
+POST /api/hotels: Create a new Hotel
 
-Name: Nizomiddin Mirzanazarov
-Email: nizomiddinmirzanazarov@gmail.com
-My portfolio: https://nizomiddin-portfolio.netlify.app/
+**Installation**
+To set up the project locally, follow these steps:
+
+Prerequisites
+Java 11 or higher installed.
+Maven installed.
+PostgreSQL installed and running.
+Git installed.
+
+**Steps**
+1. Clone the Repository:
+   git clone  https://github.com/nizomiddin1501/HMS.git
+2. Navigate to the Project Directory:
+   cd hotel-management-system
+3. Database Setup:
+   *Create a PostgreSQL database named hotel_management.
+   *Create necessary tables or let Hibernate handle it via JPA.
+   *Update the application.properties file with your PostgreSQL credentials:
+
+     spring.datasource.url=jdbc:postgresql://localhost:5432/HMS
+     spring.datasource.username=postgres
+     spring.datasource.password=1234
+
+     spring.jpa.hibernate.ddl-auto=update
+     spring.jpa.show-sql=true
+     springdoc.swagger-ui.enabled=true 
+     spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+4. Run the Application:
+   *Use Maven to build and run the application:
+     mvn clean install
+     mvn spring-boot:run   
+5. Access the Application:
+   for browcer 
+     http://localhost:8080
+   Access Swagger API documentation at:
+     http://localhost:8080/swagger-ui/index.html
+
+**Contact**
+*Email: nizomiddinmirzanazarov@gmail.com
+*GitHub: https://github.com/nizomiddin1501
+*My Portfolio: https://nizomiddin-portfolio.netlify.app/
