@@ -21,7 +21,6 @@ public class OrderDto {
             example = "1")
     private Long id;
 
-    @NotNull(message = "Order date cannot be null")
     @Schema(description = "Date of the order",
             example = "2024-01-01")
     private LocalDate orderDate;
@@ -30,12 +29,6 @@ public class OrderDto {
     @Schema(description = "Total amount of the order",
             example = "450.00")
     private Double totalAmount;
-
-    @Schema(description = "Room associated with the order")
-    private RoomDto roomDto;
-
-    @Schema(description = "User who placed the order")
-    private UserDto userDto;
 
     @NotNull(message = "Check-in date cannot be null")
     @Column(name = "check_in_date", nullable = false)
@@ -53,6 +46,15 @@ public class OrderDto {
 
     @Schema(description = "The status of the order", example = "PENDING")
     private OrderStatus orderStatus;
+
+    @Schema(description = "Room associated with the order")
+    private RoomDto roomDto;
+
+    @NotNull(message = "User is required for the order.")
+    @Schema(description = "User who placed the order")
+    private UserDto userDto;
+
+
 
 
 

@@ -1,13 +1,11 @@
 package revolusion.developers.hms.service.impl;
 
-import org.aspectj.weaver.ast.Or;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Order;
-import revolusion.developers.hms.entity.Payment;
 import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.entity.status.OrderStatus;
@@ -22,6 +20,7 @@ import revolusion.developers.hms.repository.RoomRepository;
 import revolusion.developers.hms.service.OrderService;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -102,10 +101,16 @@ public class OrderServiceImpl implements OrderService {
         order.setRoom(room); // Set the room for the order
         order.setOrderDate(LocalDate.now()); // Set order date to current date
 
-        // 8. Save order
+        // 8. Calculate total amount based on number of nights and room price
+        long numberOfNights = ChronoUnit.DAYS.between(orderDto.getCheckInDate(), orderDto.getCheckOutDate());
+        double roomPrice = room.getPrice(); // Assume room price is fetched from room entity
+        double totalAmount = numberOfNights * roomPrice;
+        order.setTotalAmount(totalAmount); // Set total amount for the order
+
+        // 9. Save order
         Order savedOrder = orderRepository.save(order);
 
-        // 9. Convert saved entity back to DTO and return
+        // 10. Convert saved entity back to DTO and return
         return orderToDto(savedOrder);
     }
 
@@ -118,9 +123,16 @@ public class OrderServiceImpl implements OrderService {
         // 2. update order details
         OrderDto orderDto = orderUpdateRequest.getOrderDto();
         existingOrder.setOrderDate(orderDto.getOrderDate());
-        existingOrder.setTotalAmount(orderDto.getTotalAmount());
 
-        // 3. Set status depending on the business logic
+        // 3. Update total amount if provided
+        if (orderDto.getTotalAmount() != null) {
+            existingOrder.setTotalAmount(orderDto.getTotalAmount()); // Update total amount if provided
+        }
+//        else {
+//            existingOrder.setTotalAmount(existingOrder.getTotalAmount()); // Keep existing total amount if not provided
+//        }
+
+        // 4. Set status depending on the business logic
         PaymentDto paymentDto = orderUpdateRequest.getPaymentDto();
         switch (paymentDto.getPaymentStatus()) {
             case PAID:
@@ -137,17 +149,17 @@ public class OrderServiceImpl implements OrderService {
                 break;
         }
 
-        // 3. get Room by ID
+        // 5. get Room by ID
         Room room = roomRepository.findById(orderDto.getRoomDto().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", orderDto.getRoomDto().getId()));
 
-        // 4. Add the updated Room to the order
+        // 6. Add the updated Room to the order
         existingOrder.setRoom(room);
 
-        // 5. Save updated order
+        // 7. Save updated order
         Order updatedOrder = orderRepository.save(existingOrder);
 
-        // 6. Convert updated order entity to DTO and return
+        // 8. Convert updated order entity to DTO and return
         return orderToDto(updatedOrder);
     }
 
@@ -159,8 +171,31 @@ public class OrderServiceImpl implements OrderService {
     }
 
     // DTO ---> Entity
+//    private Order dtoToOrder(OrderDto orderDto) {
+//        return modelMapper.map(orderDto, Order.class);
+//    }
+
     private Order dtoToOrder(OrderDto orderDto) {
-        return modelMapper.map(orderDto, Order.class);
+        Order order = new Order();
+        order.setId(orderDto.getId());
+        order.setCheckInDate(orderDto.getCheckInDate());
+        order.setCheckOutDate(orderDto.getCheckOutDate());
+
+        // Qo'lda mapping
+        if (orderDto.getUserDto() != null) {
+            User user = new User();
+            user.setId(orderDto.getUserDto().getId());
+            user.setName(orderDto.getUserDto().getName());
+            order.setUser(user);
+        }
+
+        if (orderDto.getRoomDto() != null) {
+            Room room = new Room();
+            room.setId(orderDto.getRoomDto().getId());
+            order.setRoom(room);
+        }
+
+        return order;
     }
 
     // Entity ---> DTO

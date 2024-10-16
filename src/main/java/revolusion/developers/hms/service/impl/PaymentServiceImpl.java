@@ -92,10 +92,13 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setOrder(order); // To'lovni buyurtma bilan bog'lash
         payment.setPaymentStatus(PaymentStatus.PENDING); // Set payment status to Pending
 
-        // 7. Save payment
+        // 7. Set the amount to match the total amount of the associated order
+        payment.setAmount(order.getTotalAmount()); // To'lov summasini buyurtma umumiy summasi bilan tenglashtirish
+
+        // 8. Save payment
         Payment savedPayment = paymentRepository.save(payment);
 
-        // 8. Convert the saved Payment to DTO and return
+        // 9. Convert the saved Payment to DTO and return
         return paymentToDto(savedPayment);
     }
 
@@ -118,10 +121,8 @@ public class PaymentServiceImpl implements PaymentService {
         // 3. Get userPayment details
         UserPayment userPayment = userPaymentRepository.findByUserId(user.getId());
         if (userPayment == null) {
-            //
             existingPayment.setPaymentStatus(PaymentStatus.FAILED); // To'lov statusini FAILED ga o'zgartirish
             paymentRepository.save(existingPayment); // Yangilangan to'lovni saqlash
-            //
             throw new PaymentException("Foydalanuvchi to'lov ma'lumotlari topilmadi.");
         }
 
@@ -131,10 +132,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 5. Checking user balance
         if (userPayment.getBalance() < existingPayment.getAmount()) {
-            //
             existingPayment.setPaymentStatus(PaymentStatus.FAILED); // To'lov statusini FAILED ga o'zgartirish
             paymentRepository.save(existingPayment); // Yangilangan to'lovni saqlash
-            //
             throw new PaymentException("Balance da yetarli mablag' mavjud emas.");
         }
 
@@ -146,8 +145,8 @@ public class PaymentServiceImpl implements PaymentService {
         hotel.setBalance(hotel.getBalance() + existingPayment.getAmount());
         hotelRepository.save(hotel); // Yangilangan balansni saqlash
 
-        // 8. Set updated payment details
-        existingPayment.setAmount(paymentDto.getAmount());
+        // 8. Set updated payment amount and paymentMethod
+        existingPayment.setAmount(order.getTotalAmount());
         existingPayment.setPaymentMethod(paymentDto.getPaymentMethod());
 
         // 9. Update payment status to PAID if successful

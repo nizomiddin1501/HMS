@@ -49,10 +49,4 @@ public class HotelDto {
             required = true)
     private String accountNumber;
 
-
-
-
-
-
-
 }

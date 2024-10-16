@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 /**
- * Exception thrown when a user is invalid.
+ * Exception thrown when a role is invalid.
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class RoleException extends RuntimeException{

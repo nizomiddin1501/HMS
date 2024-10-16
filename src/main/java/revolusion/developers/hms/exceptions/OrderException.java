@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 /**
- * Exception thrown when a user is invalid.
+ * Exception thrown when a order is invalid.
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class OrderException extends RuntimeException{

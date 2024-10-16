@@ -49,13 +49,4 @@ public class UserDto {
   //          example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
     private Set<RoleDto> roles;
 
-
-
-
-
-
-
-
-
-
 }

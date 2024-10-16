@@ -32,17 +32,6 @@ public class Order {
             example = "450.00")
     private Double totalAmount;
 
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @Schema(description = "The user who placed the order")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    @Schema(description = "The room that was booked")
-    private Room room;
-
     @Column(name = "check_in_date", nullable = false)
     @Schema(description = "The date the user plans to check in",
             example = "2024-10-12",
@@ -59,6 +48,16 @@ public class Order {
     @Column(name = "order_status", nullable = false)
     @Schema(description = "The status of the order", example = "PENDING")
     private OrderStatus orderStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @Schema(description = "The user who placed the order")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id", nullable = false)
+    @Schema(description = "The room that was booked")
+    private Room room;
 
 
     @PrePersist
