@@ -1,5 +1,4 @@
 package revolusion.developers.hms.service.impl;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,10 +10,7 @@ import revolusion.developers.hms.exceptions.ReviewException;
 import revolusion.developers.hms.payload.ReviewDto;
 import revolusion.developers.hms.repository.*;
 import revolusion.developers.hms.service.ReviewService;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -36,7 +32,8 @@ public class ReviewServiceImpl implements ReviewService {
             ReviewRepository reviewRepository,
             UserRepository userRepository,
             OrderRepository orderRepository,
-            HotelRepository hotelRepository) {
+            HotelRepository hotelRepository
+    ) {
         this.modelMapper = modelMapper;
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
@@ -125,12 +122,12 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.delete(review);
     }
 
-    // DTO ---> Entity
+
     private Review dtoToReview(ReviewDto reviewDto) {
         return modelMapper.map(reviewDto, Review.class);
     }
 
-    // Entity ---> DTO
+
     public ReviewDto reviewToDto(Review review) {
         return modelMapper.map(review, ReviewDto.class);
     }

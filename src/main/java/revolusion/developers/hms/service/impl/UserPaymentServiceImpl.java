@@ -13,7 +13,6 @@ import revolusion.developers.hms.payload.UserPaymentDto;
 import revolusion.developers.hms.repository.UserPaymentRepository;
 import revolusion.developers.hms.repository.UserRepository;
 import revolusion.developers.hms.service.UserPaymentService;
-
 import java.util.Optional;
 
 @Service
@@ -47,7 +46,6 @@ public class UserPaymentServiceImpl implements UserPaymentService {
         UserPayment userPayment = userPaymentRepository.findById(userPaymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("UserPayment", " Id", userPaymentId));
 
-        // Convert UserPayment entity to UserPaymentDto
         UserPaymentDto userPaymentDto = userPaymentToDto(userPayment);
         return Optional.ofNullable(userPaymentDto);
     }
@@ -107,12 +105,12 @@ public class UserPaymentServiceImpl implements UserPaymentService {
         userPaymentRepository.delete(userPayment);
     }
 
-    // DTO ---> Entity
+
     private UserPayment dtoToUserPayment(UserPaymentDto userPaymentDto) {
         return modelMapper.map(userPaymentDto, UserPayment.class);
     }
 
-    // Entity ---> DTO
+
     public UserPaymentDto userPaymentToDto(UserPayment userPayment) {
         return modelMapper.map(userPayment, UserPaymentDto.class);
     }

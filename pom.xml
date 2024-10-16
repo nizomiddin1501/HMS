@@ -107,25 +107,17 @@
         </dependency>
 
 
+<!--        <dependency>-->
+<!--            <groupId>com.itextpdf</groupId>-->
+<!--            <artifactId>itext7-core</artifactId>-->
+<!--            <version>7.1.14</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.itextpdf</groupId>
-            <artifactId>itext7-core</artifactId>
-            <version>7.1.14</version>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.2</version> <!-- yoki eng so'nggi versiyani tanlang -->
         </dependency>
-
-
-<!--        <dependency>-->
-<!--            <groupId>org.webjars</groupId>-->
-<!--            <artifactId>webjars-locator-core</artifactId>-->
-<!--            <version>0.58</version> &lt;!&ndash; Siz foydalanayotgan versiya &ndash;&gt;-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.github.classgraph</groupId>-->
-<!--            <artifactId>classgraph</artifactId>-->
-<!--            <version>4.8.69</version> &lt;!&ndash; Siz foydalanayotgan versiya &ndash;&gt;-->
-<!--        </dependency>-->
-
-
 
     </dependencies>
 

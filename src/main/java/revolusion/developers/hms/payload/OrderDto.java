@@ -54,11 +54,4 @@ public class OrderDto {
     @Schema(description = "User who placed the order")
     private UserDto userDto;
 
-
-
-
-
-
-
-
 }

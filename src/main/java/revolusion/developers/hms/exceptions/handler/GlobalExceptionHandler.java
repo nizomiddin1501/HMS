@@ -1,13 +1,12 @@
 package revolusion.developers.hms.exceptions.handler;
-
-
+import com.itextpdf.text.DocumentException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.CustomApiResponse;
-
+import java.io.IOException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,27 +16,18 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage();
         CustomApiResponse apiResponse = new CustomApiResponse(message,false,null);
         return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
-
+    }
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<CustomApiResponse> handleIOException(IOException ex) {
+        String message = "I/O xatolik yuz berdi: " + ex.getMessage();
+        CustomApiResponse apiResponse = new CustomApiResponse(message, false, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
-
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<Map<String,String>> handleMethodArgsNotValidException(MethodArgumentNotValidException ex){
-//        Map<String,String > resp = new HashMap<>();
-//        ex.getBindingResult().getAllErrors().forEach((error -> {
-//            String fieldName = ((FieldError) error).getField();
-//            String message = error.getDefaultMessage();
-//            resp.put(fieldName,message);
-//        }));
-//        return new ResponseEntity<Map<String,String>>(resp, HttpStatus.BAD_REQUEST);
-//    }
-
-
-
-
-
-
-
-
+    @ExceptionHandler(DocumentException.class)
+    public ResponseEntity<CustomApiResponse> handleDocumentException(DocumentException ex) {
+        String message = "Hujjat xatolik yuz berdi: " + ex.getMessage();
+        CustomApiResponse apiResponse = new CustomApiResponse(message, false, null);
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

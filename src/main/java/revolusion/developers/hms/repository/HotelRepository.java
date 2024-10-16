@@ -3,8 +3,12 @@ package revolusion.developers.hms.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import revolusion.developers.hms.entity.Hotel;
+import revolusion.developers.hms.payload.OrderDto;
+
+import java.util.List;
 
 public interface HotelRepository extends BaseRepository<Hotel, Long>{
+
 
 
     // Hotel Name exists check

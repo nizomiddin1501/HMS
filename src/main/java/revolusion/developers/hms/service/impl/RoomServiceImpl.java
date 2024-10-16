@@ -8,19 +8,14 @@ import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Hotel;
 import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.RoomCategory;
-import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.payload.RoomDto;
 import revolusion.developers.hms.repository.HotelRepository;
 import revolusion.developers.hms.repository.RoomCategoryRepository;
 import revolusion.developers.hms.repository.RoomRepository;
-
 import revolusion.developers.hms.service.RoomService;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomServiceImpl implements RoomService {
@@ -55,7 +50,6 @@ public class RoomServiceImpl implements RoomService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room", " Id ", roomId));
 
-        // Convert Room entity to RoomDto
         RoomDto roomDto = roomToDto(room);
         return Optional.ofNullable(roomDto);
     }
@@ -128,12 +122,12 @@ public class RoomServiceImpl implements RoomService {
         roomRepository.delete(room);
     }
 
-    // DTO ---> Entity
+
     private Room dtoToRoom(RoomDto roomDto) {
         return modelMapper.map(roomDto, Room.class);
     }
 
-    // Entity ---> DTO
+
     public RoomDto roomToDto(Room room) {
         return modelMapper.map(room, RoomDto.class);
     }

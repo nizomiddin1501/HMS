@@ -10,25 +10,27 @@ import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.repository.UserRepository;
+import revolusion.developers.hms.service.EmailService;
 import revolusion.developers.hms.service.UserService;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
 
     @Autowired
     public UserServiceImpl(
             ModelMapper modelMapper,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            EmailService emailService
+            ) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
 
@@ -43,7 +45,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", " Id", userId));
 
-        // Convert User entity to UserDto
         UserDto userDto = userToDto(user);
         return Optional.ofNullable(userDto);
     }
@@ -76,7 +77,13 @@ public class UserServiceImpl implements UserService {
         // 4. Save User
         User savedUser = userRepository.save(user);
 
-        // 4. Convert the saved User to DTO and return
+        // 5. Send confirmation email after successful registration
+        String toEmail = savedUser.getEmail();
+        String subject = "Registration was successful!!!";
+        String body = "Dear " + savedUser.getName() + ",\n\nYou have successfully registered!!!";
+        emailService.sendEmail(toEmail, subject, body);
+
+        // 6. Convert the saved User to DTO and return
         return userToDto(savedUser);
     }
 
@@ -108,12 +115,12 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    // DTO ---> Entity
+
     private User dtoToUser(UserDto userDto) {
         return modelMapper.map(userDto, User.class);
     }
 
-    // Entity ---> DTO
+
     public UserDto userToDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }

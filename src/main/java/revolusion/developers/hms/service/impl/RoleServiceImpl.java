@@ -1,24 +1,17 @@
 package revolusion.developers.hms.service.impl;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Role;
-import revolusion.developers.hms.entity.Room;
-import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoleException;
 import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.payload.RoleDto;
-import revolusion.developers.hms.payload.RoomDto;
 import revolusion.developers.hms.repository.RoleRepository;
 import revolusion.developers.hms.service.RoleService;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -31,7 +24,8 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     public RoleServiceImpl(
             ModelMapper modelMapper,
-            RoleRepository roleRepository) {
+            RoleRepository roleRepository
+    ) {
         this.modelMapper = modelMapper;
         this.roleRepository = roleRepository;
     }
@@ -48,7 +42,6 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", " Id ", roleId));
 
-        // Convert Role entity to RoleDto
         RoleDto roleDto = roleToDto(role);
         return Optional.ofNullable(roleDto);
     }
@@ -99,12 +92,12 @@ public class RoleServiceImpl implements RoleService {
         roleRepository.delete(role);
     }
 
-    // DTO ---> Entity
+
     private Role dtoToRole(RoleDto roleDto) {
         return modelMapper.map(roleDto, Role.class);
     }
 
-    // Entity ---> DTO
+
     public RoleDto roleToDto(Role role) {
         return modelMapper.map(role, RoleDto.class);
     }

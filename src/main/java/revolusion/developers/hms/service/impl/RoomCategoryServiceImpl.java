@@ -5,18 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.RoomCategory;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomCategoryException;
 import revolusion.developers.hms.payload.RoomCategoryDto;
-import revolusion.developers.hms.payload.RoomDto;
 import revolusion.developers.hms.repository.RoomCategoryRepository;
 import revolusion.developers.hms.service.RoomCategoryService;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomCategoryServiceImpl implements RoomCategoryService {
@@ -46,7 +41,6 @@ public class RoomCategoryServiceImpl implements RoomCategoryService {
         RoomCategory roomCategory = roomCategoryRepository.findById(roomCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("RoomCategory", " Id ", roomCategoryId));
 
-        // Convert RoomCategory entity to RoomCategoryDto
         RoomCategoryDto roomCategoryDto = roomCategoryToDto(roomCategory);
         return Optional.ofNullable(roomCategoryDto);
     }
@@ -101,12 +95,12 @@ public class RoomCategoryServiceImpl implements RoomCategoryService {
         roomCategoryRepository.delete(roomCategory);
     }
 
-    // DTO ---> Entity
+
     private RoomCategory dtoToRoomCategory(RoomCategoryDto roomCategoryDto) {
         return modelMapper.map(roomCategoryDto, RoomCategory.class);
     }
 
-    // Entity ---> DTO
+
     public RoomCategoryDto roomCategoryToDto(RoomCategory roomCategory) {
         return modelMapper.map(roomCategory, RoomCategoryDto.class);
     }

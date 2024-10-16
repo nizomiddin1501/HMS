@@ -14,10 +14,7 @@ import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.payload.PaymentDto;
 import revolusion.developers.hms.repository.*;
 import revolusion.developers.hms.service.PaymentService;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -58,7 +55,6 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", " Id ", paymentId));
 
-        // Convert Payment entity to PaymentDto
         PaymentDto paymentDto = paymentToDto(payment);
         return Optional.ofNullable(paymentDto);
     }
@@ -89,11 +85,11 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         // 6. Set the order to Payment and paymentStatus
-        payment.setOrder(order); // To'lovni buyurtma bilan bog'lash
-        payment.setPaymentStatus(PaymentStatus.PENDING); // Set payment status to Pending
+        payment.setOrder(order);
+        payment.setPaymentStatus(PaymentStatus.PENDING);
 
         // 7. Set the amount to match the total amount of the associated order
-        payment.setAmount(order.getTotalAmount()); // To'lov summasini buyurtma umumiy summasi bilan tenglashtirish
+        payment.setAmount(order.getTotalAmount());
 
         // 8. Save payment
         Payment savedPayment = paymentRepository.save(payment);
@@ -121,8 +117,8 @@ public class PaymentServiceImpl implements PaymentService {
         // 3. Get userPayment details
         UserPayment userPayment = userPaymentRepository.findByUserId(user.getId());
         if (userPayment == null) {
-            existingPayment.setPaymentStatus(PaymentStatus.FAILED); // To'lov statusini FAILED ga o'zgartirish
-            paymentRepository.save(existingPayment); // Yangilangan to'lovni saqlash
+            existingPayment.setPaymentStatus(PaymentStatus.FAILED);
+            paymentRepository.save(existingPayment);
             throw new PaymentException("Foydalanuvchi to'lov ma'lumotlari topilmadi.");
         }
 
@@ -132,25 +128,25 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 5. Checking user balance
         if (userPayment.getBalance() < existingPayment.getAmount()) {
-            existingPayment.setPaymentStatus(PaymentStatus.FAILED); // To'lov statusini FAILED ga o'zgartirish
-            paymentRepository.save(existingPayment); // Yangilangan to'lovni saqlash
+            existingPayment.setPaymentStatus(PaymentStatus.FAILED);
+            paymentRepository.save(existingPayment);
             throw new PaymentException("Balance da yetarli mablag' mavjud emas.");
         }
 
         // 6. Update user balance
         userPayment.setBalance(userPayment.getBalance() - existingPayment.getAmount());
-        userPaymentRepository.save(userPayment); // Yangilangan balansni saqlash
+        userPaymentRepository.save(userPayment);
 
         // 7. Update hotel balance
         hotel.setBalance(hotel.getBalance() + existingPayment.getAmount());
-        hotelRepository.save(hotel); // Yangilangan balansni saqlash
+        hotelRepository.save(hotel);
 
         // 8. Set updated payment amount and paymentMethod
         existingPayment.setAmount(order.getTotalAmount());
         existingPayment.setPaymentMethod(paymentDto.getPaymentMethod());
 
         // 9. Update payment status to PAID if successful
-        existingPayment.setPaymentStatus(PaymentStatus.PAID); // Set to Paid if the payment is successful
+        existingPayment.setPaymentStatus(PaymentStatus.PAID);
 
         // 10. Save payment
         Payment updatedPayment = paymentRepository.save(existingPayment);
@@ -168,12 +164,12 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.delete(payment);
     }
 
-    // DTO ---> Entity
+
     private Payment dtoToPayment(PaymentDto paymentDto) {
         return modelMapper.map(paymentDto, Payment.class);
     }
 
-    // Entity ---> DTO
+
     public PaymentDto paymentToDto(Payment payment) {
         return modelMapper.map(payment, PaymentDto.class);
     }

@@ -6,19 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Hotel;
-import revolusion.developers.hms.entity.Order;
-import revolusion.developers.hms.entity.Room;
-import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.exceptions.HotelException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
-import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.payload.HotelDto;
 import revolusion.developers.hms.repository.HotelRepository;
 import revolusion.developers.hms.service.HotelService;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class HotelServiceImpl implements HotelService {
@@ -31,7 +24,8 @@ public class HotelServiceImpl implements HotelService {
     @Autowired
     public HotelServiceImpl(
             ModelMapper modelMapper,
-            HotelRepository hotelRepository) {
+            HotelRepository hotelRepository
+    ) {
         this.modelMapper = modelMapper;
         this.hotelRepository = hotelRepository;
     }
@@ -48,7 +42,6 @@ public class HotelServiceImpl implements HotelService {
         Hotel hotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel", " Id ", hotelId));
 
-        // Convert Hotel entity to HotelDto
         HotelDto hotelDto = hotelToDto(hotel);
         return Optional.ofNullable(hotelDto);
     }
@@ -102,12 +95,12 @@ public class HotelServiceImpl implements HotelService {
         hotelRepository.delete(hotel);
     }
 
-    // DTO ---> Entity
+
     private Hotel dtoToHotel(HotelDto hotelDto) {
         return modelMapper.map(hotelDto, Hotel.class);
     }
 
-    // Entity ---> DTO
+
     public HotelDto hotelToDto(Hotel hotel) {
         return modelMapper.map(hotel, HotelDto.class);
     }

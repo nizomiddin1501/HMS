@@ -1,5 +1,4 @@
 package revolusion.developers.hms.service.impl;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,12 +17,10 @@ import revolusion.developers.hms.repository.OrderRepository;
 import revolusion.developers.hms.repository.PaymentRepository;
 import revolusion.developers.hms.repository.RoomRepository;
 import revolusion.developers.hms.service.OrderService;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -59,7 +56,6 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", orderId));
 
-        // Convert Order entity to OrderDto
         OrderDto orderDto = orderToDto(order);
         return Optional.ofNullable(orderDto);
     }
@@ -99,13 +95,13 @@ public class OrderServiceImpl implements OrderService {
 
         // 7. Set room and date
         order.setRoom(room); // Set the room for the order
-        order.setOrderDate(LocalDate.now()); // Set order date to current date
+        order.setOrderDate(LocalDate.now());
 
         // 8. Calculate total amount based on number of nights and room price
         long numberOfNights = ChronoUnit.DAYS.between(orderDto.getCheckInDate(), orderDto.getCheckOutDate());
-        double roomPrice = room.getPrice(); // Assume room price is fetched from room entity
+        double roomPrice = room.getPrice();
         double totalAmount = numberOfNights * roomPrice;
-        order.setTotalAmount(totalAmount); // Set total amount for the order
+        order.setTotalAmount(totalAmount);
 
         // 9. Save order
         Order savedOrder = orderRepository.save(order);
@@ -128,24 +124,21 @@ public class OrderServiceImpl implements OrderService {
         if (orderDto.getTotalAmount() != null) {
             existingOrder.setTotalAmount(orderDto.getTotalAmount()); // Update total amount if provided
         }
-//        else {
-//            existingOrder.setTotalAmount(existingOrder.getTotalAmount()); // Keep existing total amount if not provided
-//        }
 
         // 4. Set status depending on the business logic
         PaymentDto paymentDto = orderUpdateRequest.getPaymentDto();
         switch (paymentDto.getPaymentStatus()) {
             case PAID:
-                existingOrder.setOrderStatus(OrderStatus.CONFIRMED);  // Agar to'lov amalga oshirilgan bo'lsa, buyurtmani tasdiqlash
+                existingOrder.setOrderStatus(OrderStatus.CONFIRMED);
                 break;
             case FAILED:
-                existingOrder.setOrderStatus(OrderStatus.CANCELLED); // Agar to'lov rad etilgan bo'lsa, buyurtmani bekor qilish
+                existingOrder.setOrderStatus(OrderStatus.CANCELLED);
                 break;
             case PENDING:
-                existingOrder.setOrderStatus(OrderStatus.PENDING); // Agar to'lov hali bajarilmagan bo'lsa, holatni "Pending" deb belgilash
+                existingOrder.setOrderStatus(OrderStatus.PENDING);
                 break;
             default:
-                existingOrder.setOrderStatus(OrderStatus.PENDING); // Boshqa holatlar uchun, holatni "Pending" deb belgilash
+                existingOrder.setOrderStatus(OrderStatus.PENDING);
                 break;
         }
 
@@ -170,7 +163,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
-    // DTO ---> Entity
+
 //    private Order dtoToOrder(OrderDto orderDto) {
 //        return modelMapper.map(orderDto, Order.class);
 //    }
@@ -181,7 +174,6 @@ public class OrderServiceImpl implements OrderService {
         order.setCheckInDate(orderDto.getCheckInDate());
         order.setCheckOutDate(orderDto.getCheckOutDate());
 
-        // Qo'lda mapping
         if (orderDto.getUserDto() != null) {
             User user = new User();
             user.setId(orderDto.getUserDto().getId());
@@ -198,7 +190,7 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    // Entity ---> DTO
+
     public OrderDto orderToDto(Order order) {
         return modelMapper.map(order, OrderDto.class);
     }

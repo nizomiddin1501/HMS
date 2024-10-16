@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.UserDto;
+import revolusion.developers.hms.service.EmailService;
 import revolusion.developers.hms.service.UserService;
 
 import java.util.Optional;
@@ -25,16 +26,22 @@ public class UserController {
 
 
     private final UserService userService;
+    private final EmailService emailService;
 
     /**
      * Constructor for RegionController.
      *
      * @param userService the service to manage user records
-     * @Autowired automatically injects the UserService bean
+     * @param emailService the service to send emails to users
+     * @Autowired automatically injects the UserService and EmailService beans
      */
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(
+            UserService userService,
+            EmailService emailService
+    ) {
         this.userService = userService;
+        this.emailService = emailService;
     }
 
 
@@ -107,7 +114,7 @@ public class UserController {
      * Creates a new user.
      *
      * This method validates the incoming user data (received via DTO) and saves it to the database
-     * if valid.
+     * if valid. After creating the user, an email is sent to notify the user of the successful registration.
      *
      * @param userDto the DTO containing the user information to be saved
      * @return a ResponseEntity containing a CustomApiResponse with the saved user data
