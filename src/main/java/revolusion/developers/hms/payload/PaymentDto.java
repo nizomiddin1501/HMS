@@ -40,7 +40,7 @@ public class PaymentDto {
     private OrderDto orderDto;
 
 
-    @Schema(description = "The status of the payment", example = "PAID")
+    @Schema(description = "The status of the payment", example = "PENDING")
     private PaymentStatus paymentStatus;
 
 

@@ -47,7 +47,7 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
-    @Schema(description = "The status of the payment", example = "PAID")
+    @Schema(description = "The status of the payment", example = "PENDING")
     private PaymentStatus paymentStatus;
 
 
