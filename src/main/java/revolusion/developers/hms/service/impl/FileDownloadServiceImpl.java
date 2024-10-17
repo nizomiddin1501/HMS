@@ -129,7 +129,10 @@ public class FileDownloadServiceImpl implements FileDownloadService {
             row.createCell(3).setCellValue(order.getCheckInDate().toString());
             row.createCell(4).setCellValue(order.getCheckOutDate().toString());
             row.createCell(5).setCellValue(order.getOrderStatus().toString());
-            row.createCell(6).setCellValue((Date) (order.getUserDto() != null ? order.getUserDto().getId() : ""));
+//            row.createCell(6).setCellValue((Date) (order.getUserDto() != null ? order.getUserDto().getId() : ""));
+            row.createCell(6).setCellValue(order.getUserDto() != null ? String.valueOf(order.getUserDto().getId()) : "");
+
+
         }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
