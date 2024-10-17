@@ -45,6 +45,18 @@ public class UserDto {
     private String about;
 
 
+    @Schema(description = "Verification code sent to the user's email for verification.")
+    private String verificationCode;
+
+    @Schema(description = "Reset code sent to the user's email for password reset.")
+    private String resetCode;
+
+    @Schema(description = "Indicates whether the user's email is verified or not.")
+    private boolean isVerified;
+
+
+
+
     @Schema(description = "Roles assigned to the user.")
   //          example = "[\"ROLE_USER\", \"ROLE_ADMIN\"]")
     private Set<RoleDto> roles;

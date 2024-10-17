@@ -45,6 +45,17 @@ public class User {
             example = "A frequent traveler who loves staying in luxury hotels.")
     private String about;
 
+    @Column(name = "verification_code")
+    @Schema(description = "Verification code for email confirmation")
+    private String verificationCode;
+
+    @Column(name = "reset_code")
+    @Schema(description = "Code used for password reset")
+    private String resetCode;
+
+    @Column(name = "is_verified", nullable = false)
+    @Schema(description = "Indicates whether the user's email is verified", example = "false")
+    private boolean isVerified;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -60,13 +71,8 @@ public class User {
     private Set<UserPayment> userPayments;
 
 
-
-
-
-
-
-
-
-
+    public void setIsVerified(boolean isVerified) {
+        this.isVerified = isVerified;
+    }
 
 }

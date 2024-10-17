@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.EmailService;
@@ -122,15 +123,127 @@ public class UserController {
     @Operation(summary = "Create a new User", description = "Create a new user record.")
     @ApiResponse(responseCode = "201", description = "User created successfully.")
     @PostMapping
-    public ResponseEntity<CustomApiResponse<UserDto>> createUser(@Valid @RequestBody UserDto userDto){
-        UserDto savedUser = userService.createUser(userDto);
-        CustomApiResponse<UserDto> response = new CustomApiResponse<>(
-                "User created successfully",
-                true,
-                savedUser
-        );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<CustomApiResponse<UserDto>> createUser(@Valid @RequestBody UserDto userDto) {
+        try {
+            UserDto savedUser = userService.createUser(userDto);
+            CustomApiResponse<UserDto> response = new CustomApiResponse<>(
+                    "User created successfully",
+                    true,
+                    savedUser
+            );
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (UserException e) {
+            CustomApiResponse<UserDto> response = new CustomApiResponse<>(
+                    e.getMessage(),
+                    false,
+                    null
+            );
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
+
+
+
+    /**
+     * Verify the user's email using the verification code.
+     *
+     * @param email the email of the user
+     * @param verificationCode the verification code sent to the user
+     * @return a ResponseEntity indicating the result of the verification
+     */
+    @PostMapping("/verify")
+    public ResponseEntity<CustomApiResponse<String>> verifyUser(
+            @RequestParam String email,
+            @RequestParam String verificationCode) {
+        try {
+            userService.verifyUser(email, verificationCode);
+            CustomApiResponse<String> response = new CustomApiResponse<>(
+                    "User verified successfully",
+                    true,
+                    null
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (UserException e) {
+            CustomApiResponse<String> response = new CustomApiResponse<>(
+                    e.getMessage(),
+                    false,
+                    null
+            );
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+    /**
+     * Sends a reset password email to the user.
+     *
+     * This method generates a reset code and sends an email to the user to initiate the password reset process.
+     *
+     * @param email the email address of the user who requested the password reset
+     * @return a ResponseEntity containing a message indicating the result of the operation
+     */
+    @Operation(summary = "Send Reset Password Email", description = "Send a reset password email to the user.")
+    @ApiResponse(responseCode = "200", description = "Reset password email sent successfully.")
+    @PostMapping("/reset-password")
+    public ResponseEntity<CustomApiResponse<String>> sendResetPasswordEmail(@RequestParam String email) {
+        try {
+            userService.sendResetPasswordEmail(email);
+            CustomApiResponse<String> response = new CustomApiResponse<>(
+                    "Reset password email sent successfully",
+                    true,
+                    null
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (UserException e) {
+            CustomApiResponse<String> response = new CustomApiResponse<>(
+                    e.getMessage(),
+                    false,
+                    null
+            );
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+
+    /**
+     * Resets the user's password.
+     *
+     * This method verifies the reset code and updates the user's password if the code is valid.
+     *
+     * @param email the email address of the user who requested the password reset
+     * @param resetCode the reset code sent to the user
+     * @param newPassword the new password to set for the user
+     * @return a ResponseEntity containing a message indicating the result of the operation
+     */
+    @Operation(summary = "Reset Password", description = "Reset the user's password using the reset code.")
+    @ApiResponse(responseCode = "200", description = "Password reset successfully.")
+    @PostMapping("/reset-password-confirm")
+    public ResponseEntity<CustomApiResponse<String>> resetPassword(
+            @RequestParam String email,
+            @RequestParam String resetCode,
+            @RequestParam String newPassword) {
+        try {
+            userService.resetPassword(email, resetCode, newPassword);
+            CustomApiResponse<String> response = new CustomApiResponse<>(
+                    "Password reset successfully",
+                    true,
+                    null
+            );
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (UserException e) {
+            CustomApiResponse<String> response = new CustomApiResponse<>(
+                    e.getMessage(),
+                    false,
+                    null
+            );
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 
 
 
@@ -175,6 +288,7 @@ public class UserController {
 
 
 
+
     /**
      * Delete a user by their ID.
      *
@@ -205,6 +319,9 @@ public class UserController {
             return new ResponseEntity<>(customApiResponse, HttpStatus.NOT_FOUND);
         }
     }
+
+
+
 
 
 

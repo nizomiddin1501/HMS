@@ -12,7 +12,9 @@ import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.repository.UserRepository;
 import revolusion.developers.hms.service.EmailService;
 import revolusion.developers.hms.service.UserService;
+
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
             ModelMapper modelMapper,
             UserRepository userRepository,
             EmailService emailService
-            ) {
+    ) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.emailService = emailService;
@@ -68,7 +70,12 @@ public class UserServiceImpl implements UserService {
             throw new UserException("User with this email already exists");
         }
 
-        // 4. Optionally hash the password before saving
+        // 5. Generate verification code
+        String verificationCode = generateVerificationCode();
+        user.setVerificationCode(verificationCode);
+        user.setIsVerified(false);
+
+
 //        if (userDto.getPassword() != null) {
 //            String hashedPassword = passwordEncoder.encode(userDto.getPassword());
 //            user.setPassword(hashedPassword);
@@ -77,14 +84,74 @@ public class UserServiceImpl implements UserService {
         // 4. Save User
         User savedUser = userRepository.save(user);
 
-        // 5. Send confirmation email after successful registration
+        // 6. Send confirmation email after successful registration
         String toEmail = savedUser.getEmail();
-        String subject = "Registration was successful!!!";
-        String body = "Dear " + savedUser.getName() + ",\n\nYou have successfully registered!!!";
+        String subject = "Email Verification";
+        String body = "Dear " + savedUser.getName() + ",\n\n" +
+                "Please verify your email using the following code: " + verificationCode +
+                "\n\nThank you!";
         emailService.sendEmail(toEmail, subject, body);
 
-        // 6. Convert the saved User to DTO and return
+        // 7. Convert the saved User to DTO and return
         return userToDto(savedUser);
+    }
+
+
+    @Override
+    public void verifyUser(String email, String verificationCode) throws UserException {
+        User user = userRepository.findByUserEmail(email);
+        if (user == null) {
+                throw  new UserException("User not found");
+        }
+        if (user.isVerified()) {
+            throw new UserException("User is already verified");
+        }
+
+        if (!user.getVerificationCode().equals(verificationCode)) {
+            throw new UserException("Invalid verification code");
+        }
+
+        String storedVerificationCode = user.getVerificationCode();
+        if (storedVerificationCode == null || !storedVerificationCode.equals(verificationCode)) {
+            throw new UserException("Invalid verification code");
+        }
+
+        user.setIsVerified(true);
+        user.setVerificationCode(null);
+        userRepository.save(user);
+    }
+
+
+    @Override
+    public void sendResetPasswordEmail(String email ) throws UserException {
+        User user = userRepository.findByUserEmail(email);
+        if (user == null) {
+            throw new UserException("User with this email does not exist");
+        }
+
+        // 1. Generate reset code
+        String resetCode = generateVerificationCode();
+        user.setResetCode(resetCode);
+        userRepository.save(user);
+
+        // 2. Send email with reset code
+        String subject = "Password Reset Request";
+        String body = "Dear " + user.getName() + ",\n\n" +
+                "To reset your password, please use the following code: " + resetCode +
+                "\n\nThank you!";
+        emailService.sendEmail(email, subject, body);
+    }
+
+    @Override
+    public void resetPassword(String email, String resetCode, String newPassword) throws UserException {
+        User user = userRepository.findByUserEmail(email);
+        if (user == null || !user.getResetCode().equals(resetCode)) {
+            throw new UserException("Invalid email or reset code");
+        }
+
+        user.setPassword(newPassword);
+        user.setResetCode(null);
+        userRepository.save(user);
     }
 
     @Override
@@ -116,6 +183,10 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    public String generateVerificationCode() {
+        return UUID.randomUUID().toString();
+    }
+
     private User dtoToUser(UserDto userDto) {
         return modelMapper.map(userDto, User.class);
     }
@@ -124,7 +195,6 @@ public class UserServiceImpl implements UserService {
     public UserDto userToDto(User user) {
         return modelMapper.map(user, UserDto.class);
     }
-
 
 
 }
