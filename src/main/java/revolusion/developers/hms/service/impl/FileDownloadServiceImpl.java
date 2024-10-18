@@ -119,10 +119,7 @@ public class FileDownloadServiceImpl implements FileDownloadService {
             row.createCell(3).setCellValue(order.getCheckInDate().toString());
             row.createCell(4).setCellValue(order.getCheckOutDate().toString());
             row.createCell(5).setCellValue(order.getOrderStatus().toString());
-//            row.createCell(6).setCellValue((Date) (order.getUserDto() != null ? order.getUserDto().getId() : ""));
             row.createCell(6).setCellValue(order.getUserDto() != null ? String.valueOf(order.getUserDto().getId()) : "");
-
-
         }
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -161,7 +158,6 @@ public class FileDownloadServiceImpl implements FileDownloadService {
             document.add(new Paragraph("Account Number: " + hotel.getAccountNumber()));
             document.add(new Paragraph(" "));
         }
-
         document.add(new Paragraph("Order Data"));
         document.add(new Paragraph(" "));
 
@@ -175,7 +171,6 @@ public class FileDownloadServiceImpl implements FileDownloadService {
             document.add(new Paragraph("User ID: " + (order.getUserDto() != null ? order.getUserDto().getId() : "")));
             document.add(new Paragraph(" "));
         }
-
         document.close();
     }
 
@@ -183,7 +178,6 @@ public class FileDownloadServiceImpl implements FileDownloadService {
     private HotelDto convertToDto(Hotel hotel) {
         return modelMapper.map(hotel, HotelDto.class);
     }
-
     private OrderDto convertToDto(Order order) {
         return modelMapper.map(order, OrderDto.class);
     }

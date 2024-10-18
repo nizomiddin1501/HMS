@@ -9,20 +9,14 @@ import java.util.Optional;
 public interface UserPaymentService {
 
 
-
-    // get all userPayments using pagination
     Page<UserPaymentDto> getAllUserPayments(int page, int size);
 
-    // get userPayment by ID
     Optional<UserPaymentDto> getUserPaymentById(Long userPaymentId) throws ResourceNotFoundException;
 
-    // create a new userPayment
     UserPaymentDto createUserPayment(UserPaymentDto userPaymentDto) throws UserPaymentException;
 
-    // update an existing userPayment
     UserPaymentDto updateUserPayment(Long userPaymentId, UserPaymentDto userPaymentDto) throws ResourceNotFoundException;
 
-    // delete a userPayment
     void deleteUserPayment(Long userPaymentId) throws ResourceNotFoundException;
 
 

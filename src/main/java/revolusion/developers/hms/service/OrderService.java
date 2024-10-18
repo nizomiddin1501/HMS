@@ -13,19 +13,14 @@ import java.util.Optional;
 public interface OrderService {
 
 
-    // get all orders using pagination
     Page<OrderDto> getAllOrders(int page, int size);
 
-    // get order by ID
     Optional<OrderDto> getOrderById(Long orderId) throws ResourceNotFoundException;
 
-    // create a new order
     OrderDto createOrder(OrderDto orderDto) throws OrderException;
 
-    // update an existing order
     OrderDto updateOrder(Long orderId, OrderUpdateRequest orderUpdateRequest) throws ResourceNotFoundException;
 
-    // delete a order
     void deleteOrder(Long orderId) throws ResourceNotFoundException;
 
 

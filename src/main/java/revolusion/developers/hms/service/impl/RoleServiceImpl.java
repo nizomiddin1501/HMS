@@ -33,47 +33,30 @@ public class RoleServiceImpl implements RoleService {
     public Optional<RoleDto> getRoleById(Long roleId) throws ResourceNotFoundException {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", " Id ", roleId));
-
         RoleDto roleDto = roleToDto(role);
         return Optional.ofNullable(roleDto);
     }
 
     @Override
     public RoleDto createRole(RoleDto roleDto) throws RoleException {
-        // 1. Convert DTO to Entity
         Role role = dtoToRole(roleDto);
-
-        // 2. Perform business checks on the entity
         if (role.getName() == null || role.getName().isEmpty()) {
             throw new RoomException("Role name cannot be null or empty");
         }
-
-        // 3. Checking that the role name column does not exist
         boolean exists = roleRepository.existsByName(role.getName());
         if (exists) {
             throw new RoleException("Role with this name already exists");
         }
-
-        // 4. Save Role
         Role savedRole = roleRepository.save(role);
-
-        // 5. Convert the saved Role to DTO and return
         return roleToDto(savedRole);
     }
 
     @Override
     public RoleDto updateRole(Long roleId, RoleDto roleDto) throws ResourceNotFoundException {
-        // 1. Get the available role
         Role existingRole = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", " Id ", roleId));
-
-        // 2. update user details
         existingRole.setName(roleDto.getName());
-
-        // 3. Save updated role
         Role updatedRole = roleRepository.save(existingRole);
-
-        // 4. Convert updated role entity to DTO and return
         return roleToDto(updatedRole);
     }
 
@@ -88,8 +71,6 @@ public class RoleServiceImpl implements RoleService {
     private Role dtoToRole(RoleDto roleDto) {
         return modelMapper.map(roleDto, Role.class);
     }
-
-
     public RoleDto roleToDto(Role role) {
         return modelMapper.map(role, RoleDto.class);
     }

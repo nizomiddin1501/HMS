@@ -10,18 +10,13 @@ import java.util.Optional;
 
 public interface RoomService {
 
-    // get all rooms using pagination
     Page<RoomDto> getAllRooms(int page, int size);
 
-    // get room by ID
     Optional<RoomDto> getRoomById(Long roomId) throws ResourceNotFoundException;
 
-    // create a new room
     RoomDto createRoom(RoomDto roomDto) throws RoomException;
 
-    // update an existing room
     RoomDto updateRoom(Long roomId, RoomDto roomDto) throws ResourceNotFoundException;
 
-    // delete a room
     void deleteRoom(Long roomId) throws ResourceNotFoundException;
 }

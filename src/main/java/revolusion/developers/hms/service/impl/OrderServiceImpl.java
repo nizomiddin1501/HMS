@@ -43,31 +43,26 @@ public class OrderServiceImpl implements OrderService {
     public Optional<OrderDto> getOrderById(Long orderId) throws ResourceNotFoundException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", orderId));
-
         OrderDto orderDto = orderToDto(order);
         return Optional.ofNullable(orderDto);
     }
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) throws OrderException {
-        // 1. Convert OrderDto to Order entity
+
         Order order = dtoToOrder(orderDto);
 
-        // 2. Validate User existence
         if (order.getUser() == null || order.getUser().getId() == null) {
             throw new OrderException("User is required for the order.");
         }
 
-        // 3. Validate Room existence
         if (order.getRoom() == null || order.getRoom().getId() == null) {
             throw new OrderException("Room is required for the order.");
         }
 
-        // 4. Get Room by ID
         Room room = roomRepository.findById(order.getRoom().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", order.getRoom().getId()));
 
-        // 5. Check for existing orders that overlap with the requested dates
         List<Order> existingOrders = orderRepository.findByRoomId(room.getId());
         for (Order existingOrder : existingOrders) {
             if ((orderDto.getCheckInDate().isBefore(existingOrder.getCheckOutDate()) ||
@@ -78,42 +73,32 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        // 6. Set status to "Pending" as the order is just created
         order.setOrderStatus(OrderStatus.PENDING);
 
-        // 7. Set room and date
-        order.setRoom(room); // Set the room for the order
+        order.setRoom(room);
         order.setOrderDate(LocalDate.now());
 
-        // 8. Calculate total amount based on number of nights and room price
         long numberOfNights = ChronoUnit.DAYS.between(orderDto.getCheckInDate(), orderDto.getCheckOutDate());
         double roomPrice = room.getPrice();
         double totalAmount = numberOfNights * roomPrice;
         order.setTotalAmount(totalAmount);
 
-        // 9. Save order
         Order savedOrder = orderRepository.save(order);
 
-        // 10. Convert saved entity back to DTO and return
         return orderToDto(savedOrder);
     }
 
     @Override
     public OrderDto updateOrder(Long orderId, OrderUpdateRequest orderUpdateRequest) throws ResourceNotFoundException {
-        // 1. Get the available order
-        Order existingOrder = orderRepository.findById(orderId)
+         Order existingOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", " Id ", orderId));
-
-        // 2. update order details
         OrderDto orderDto = orderUpdateRequest.getOrderDto();
         existingOrder.setOrderDate(orderDto.getOrderDate());
 
-        // 3. Update total amount if provided
         if (orderDto.getTotalAmount() != null) {
-            existingOrder.setTotalAmount(orderDto.getTotalAmount()); // Update total amount if provided
+            existingOrder.setTotalAmount(orderDto.getTotalAmount());
         }
 
-        // 4. Set status depending on the business logic
         PaymentDto paymentDto = orderUpdateRequest.getPaymentDto();
         switch (paymentDto.getPaymentStatus()) {
             case PAID:
@@ -130,17 +115,11 @@ public class OrderServiceImpl implements OrderService {
                 break;
         }
 
-        // 5. get Room by ID
         Room room = roomRepository.findById(orderDto.getRoomDto().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", orderDto.getRoomDto().getId()));
+         existingOrder.setRoom(room);
 
-        // 6. Add the updated Room to the order
-        existingOrder.setRoom(room);
-
-        // 7. Save updated order
         Order updatedOrder = orderRepository.save(existingOrder);
-
-        // 8. Convert updated order entity to DTO and return
         return orderToDto(updatedOrder);
     }
 
@@ -168,17 +147,13 @@ public class OrderServiceImpl implements OrderService {
             user.setName(orderDto.getUserDto().getName());
             order.setUser(user);
         }
-
         if (orderDto.getRoomDto() != null) {
             Room room = new Room();
             room.setId(orderDto.getRoomDto().getId());
             order.setRoom(room);
         }
-
         return order;
     }
-
-
     public OrderDto orderToDto(Order order) {
         return modelMapper.map(order, OrderDto.class);
     }

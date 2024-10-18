@@ -11,27 +11,19 @@ import java.util.Optional;
 public interface UserService {
 
 
-    // get all users using pagination
     Page<UserDto> getAllUsers(int page, int size);
 
-    // get user by ID
     Optional<UserDto> getUserById(Long userId) throws ResourceNotFoundException;
 
-    // create a new user
     UserDto createUser(UserDto userDto) throws UserException;
 
-    // verify user
     void verifyUser(String email, String verificationCode) throws UserException;
 
-    // send verificationCode forgot password
     void sendResetPasswordEmail(String email) throws UserException;
 
-    // reset resending password
     void resetPassword(String email, String resetCode, String newPassword) throws UserException;
 
-    // update an existing user
     UserDto updateUser(Long userId, UserDto userDto) throws ResourceNotFoundException;
 
-    // delete a user
     void deleteUser(Long userId) throws ResourceNotFoundException;
 }
