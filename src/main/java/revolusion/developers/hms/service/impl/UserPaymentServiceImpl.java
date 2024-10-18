@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,23 +17,13 @@ import revolusion.developers.hms.service.UserPaymentService;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserPaymentServiceImpl implements UserPaymentService {
 
     private final ModelMapper modelMapper;
     private final UserPaymentRepository userPaymentRepository;
     private final UserRepository userRepository;
 
-
-    @Autowired
-    public UserPaymentServiceImpl(
-            ModelMapper modelMapper,
-            UserRepository userRepository,
-            UserPaymentRepository userPaymentRepository
-    ) {
-        this.modelMapper = modelMapper;
-        this.userRepository = userRepository;
-        this.userPaymentRepository = userPaymentRepository;
-    }
 
 
     @Override

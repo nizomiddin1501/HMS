@@ -1,9 +1,9 @@
 package revolusion.developers.hms.service.impl;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.*;
@@ -17,6 +17,7 @@ import revolusion.developers.hms.service.PaymentService;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
     private final ModelMapper modelMapper;
@@ -24,24 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserPaymentRepository userPaymentRepository;
     private final HotelRepository hotelRepository;
     private final OrderRepository orderRepository;
-    private final RoomRepository roomRepository;
 
-    @Autowired
-    public PaymentServiceImpl(
-            ModelMapper modelMapper,
-            PaymentRepository paymentRepository,
-            UserPaymentRepository userPaymentRepository,
-            HotelRepository hotelRepository,
-            OrderRepository orderRepository,
-            RoomRepository roomRepository
-    ) {
-        this.modelMapper = modelMapper;
-        this.paymentRepository = paymentRepository;
-        this.userPaymentRepository = userPaymentRepository;
-        this.hotelRepository = hotelRepository;
-        this.orderRepository = orderRepository;
-        this.roomRepository = roomRepository;
-    }
 
 
     @Override

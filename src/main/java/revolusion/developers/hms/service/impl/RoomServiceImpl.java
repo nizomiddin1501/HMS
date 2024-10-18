@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import revolusion.developers.hms.service.RoomService;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
 
     private final ModelMapper modelMapper;
@@ -26,17 +28,6 @@ public class RoomServiceImpl implements RoomService {
     private final HotelRepository hotelRepository;
 
 
-    @Autowired
-    public RoomServiceImpl(
-            ModelMapper modelMapper,
-            RoomRepository roomRepository,
-            RoomCategoryRepository roomCategoryRepository,
-            HotelRepository hotelRepository) {
-        this.modelMapper = modelMapper;
-        this.roomRepository = roomRepository;
-        this.roomCategoryRepository = roomCategoryRepository;
-        this.hotelRepository = hotelRepository;
-    }
 
 
     @Override

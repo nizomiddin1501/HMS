@@ -1,6 +1,6 @@
 package revolusion.developers.hms.service.impl;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,27 +23,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final ModelMapper modelMapper;
-
     private final OrderRepository orderRepository;
-
     private final RoomRepository roomRepository;
 
     private final PaymentRepository paymentRepository;
 
-    @Autowired
-    public OrderServiceImpl(
-            ModelMapper modelMapper,
-            OrderRepository orderRepository,
-            RoomRepository roomRepository,
-            PaymentRepository paymentRepository) {
-        this.modelMapper = modelMapper;
-        this.orderRepository = orderRepository;
-        this.roomRepository = roomRepository;
-        this.paymentRepository = paymentRepository;
-    }
 
     @Override
     public Page<OrderDto> getAllOrders(int page, int size) {

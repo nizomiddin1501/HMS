@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,21 +15,13 @@ import revolusion.developers.hms.service.HotelService;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
 
     private final ModelMapper modelMapper;
 
     private final HotelRepository hotelRepository;
-
-    @Autowired
-    public HotelServiceImpl(
-            ModelMapper modelMapper,
-            HotelRepository hotelRepository
-    ) {
-        this.modelMapper = modelMapper;
-        this.hotelRepository = hotelRepository;
-    }
 
 
     @Override

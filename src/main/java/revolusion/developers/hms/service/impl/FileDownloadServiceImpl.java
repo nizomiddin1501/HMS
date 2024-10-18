@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -25,23 +26,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FileDownloadServiceImpl implements FileDownloadService {
 
     private final ModelMapper modelMapper;
     private final HotelRepository hotelRepository;
     private final OrderRepository orderRepository;
-
-    @Autowired
-    public FileDownloadServiceImpl(
-            ModelMapper modelMapper,
-            HotelRepository hotelRepository,
-            OrderRepository orderRepository
-    ) {
-        this.modelMapper = modelMapper;
-        this.hotelRepository = hotelRepository;
-        this.orderRepository = orderRepository;
-    }
-
 
 
 

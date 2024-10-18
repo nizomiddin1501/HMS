@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,20 +15,12 @@ import revolusion.developers.hms.service.RoomCategoryService;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RoomCategoryServiceImpl implements RoomCategoryService {
 
     private final ModelMapper modelMapper;
-
     private final RoomCategoryRepository roomCategoryRepository;
 
-
-    @Autowired
-    public RoomCategoryServiceImpl(
-            ModelMapper modelMapper,
-            RoomCategoryRepository roomCategoryRepository) {
-        this.modelMapper = modelMapper;
-        this.roomCategoryRepository = roomCategoryRepository;
-    }
 
 
     @Override

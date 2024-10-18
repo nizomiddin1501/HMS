@@ -1,5 +1,6 @@
 package revolusion.developers.hms.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,23 +18,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final EmailService emailService;
-
-
-    @Autowired
-    public UserServiceImpl(
-            ModelMapper modelMapper,
-            UserRepository userRepository,
-            EmailService emailService
-    ) {
-        this.modelMapper = modelMapper;
-        this.userRepository = userRepository;
-        this.emailService = emailService;
-    }
 
 
     @Override

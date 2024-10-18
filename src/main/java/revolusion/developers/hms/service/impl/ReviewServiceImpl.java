@@ -1,4 +1,5 @@
 package revolusion.developers.hms.service.impl;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,33 +14,16 @@ import revolusion.developers.hms.service.ReviewService;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
     private final ModelMapper modelMapper;
-
     private final ReviewRepository reviewRepository;
-
     private final UserRepository userRepository;
-
     private final OrderRepository orderRepository;
-
     private final HotelRepository hotelRepository;
 
 
-    @Autowired
-    public ReviewServiceImpl(
-            ModelMapper modelMapper,
-            ReviewRepository reviewRepository,
-            UserRepository userRepository,
-            OrderRepository orderRepository,
-            HotelRepository hotelRepository
-    ) {
-        this.modelMapper = modelMapper;
-        this.reviewRepository = reviewRepository;
-        this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
-        this.hotelRepository = hotelRepository;
-    }
 
 
     @Override

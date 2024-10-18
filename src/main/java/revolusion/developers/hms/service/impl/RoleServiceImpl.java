@@ -1,4 +1,5 @@
 package revolusion.developers.hms.service.impl;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,21 +15,12 @@ import revolusion.developers.hms.service.RoleService;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
     private final ModelMapper modelMapper;
-
     private final RoleRepository roleRepository;
 
-
-    @Autowired
-    public RoleServiceImpl(
-            ModelMapper modelMapper,
-            RoleRepository roleRepository
-    ) {
-        this.modelMapper = modelMapper;
-        this.roleRepository = roleRepository;
-    }
 
 
     @Override
