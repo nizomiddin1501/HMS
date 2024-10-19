@@ -1,4 +1,5 @@
 package revolusion.developers.hms.payload;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -52,6 +54,11 @@ public class UserDto {
 
     @Schema(description = "Indicates whether the user's email is verified or not.")
     private boolean isVerified;
+
+    @JsonIgnore
+    @Schema(hidden = true,
+            description = "Time when the verification or reset code expires")
+    private LocalDateTime codeExpiryTime;
 
 
     @Schema(description = "Roles assigned to the user.")

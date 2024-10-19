@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import revolusion.developers.hms.entity.status.OrderStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
@@ -49,6 +51,11 @@ public class Order {
     @Schema(description = "The status of the order", example = "PENDING")
     private OrderStatus orderStatus;
 
+    @Column(name = "deadline")
+    @Schema(description = "The deadline for the order, indicating the last date to complete the booking.",
+            example = "2024-10-11")
+    private LocalDateTime deadline;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(description = "The user who placed the order")
@@ -67,17 +74,4 @@ public class Order {
             this.orderStatus = OrderStatus.PENDING;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

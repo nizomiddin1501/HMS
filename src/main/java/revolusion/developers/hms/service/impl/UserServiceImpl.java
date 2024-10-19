@@ -14,8 +14,10 @@ import revolusion.developers.hms.repository.UserRepository;
 import revolusion.developers.hms.service.EmailService;
 import revolusion.developers.hms.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final UserMapper userMapper;
+
+    private ConcurrentHashMap<String, User> temporaryUsers = new ConcurrentHashMap<>();
 
 
     @Override
@@ -40,56 +44,56 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) throws UserException {
-        User user = userMapper.dtoToUser(userDto);
-        if (user.getName() == null ||
-                user.getName().isEmpty() ||
-                user.getEmail() == null ||
-                user.getEmail().isEmpty()) {
+    public void createUser(UserDto userDto) throws UserException {
+        if (userDto.getName() == null || userDto.getEmail() == null) {
             throw new UserException("User name and email must not be null or empty");
         }
-        boolean exists = userRepository.existsByEmail(user.getEmail());
+        boolean exists = userRepository.existsByEmail(userDto.getEmail());
         if (exists) {
             throw new UserException("User with this email already exists");
         }
         String verificationCode = generateVerificationCode();
+
+        User user = new User();
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+        user.setAbout(userDto.getAbout());
         user.setVerificationCode(verificationCode);
         user.setIsVerified(false);
 
-//        if (userDto.getPassword() != null) {
-//            String hashedPassword = passwordEncoder.encode(userDto.getPassword());
-//            user.setPassword(hashedPassword);
-//        }
+        user.setCodeExpiryTime(LocalDateTime.now().plusMinutes(1));
 
-        User savedUser = userRepository.save(user);
-        String toEmail = savedUser.getEmail();
+        temporaryUsers.put(user.getEmail(), user);
+
+        String toEmail = user.getEmail();
         String subject = "Email Verification";
-        String body = "Dear " + savedUser.getName() + ",\n\n" +
+        String body = "Dear " + user.getName() + ",\n\n" +
                 "Please verify your email using the following code: " + verificationCode +
                 "\n\nThank you!";
         emailService.sendEmail(toEmail, subject, body);
-        return userMapper.userToDto(savedUser);
     }
-
 
     @Override
     public void verifyUser(String email, String verificationCode) throws UserException {
-        User user = userRepository.findByUserEmail(email);
+        User user = temporaryUsers.get(email);
         if (user == null) {
                 throw  new UserException("User not found");
         }
         if (user.isVerified()) {
             throw new UserException("User is already verified");
         }
+
+        if (user.getCodeExpiryTime() != null && user.getCodeExpiryTime().isBefore(LocalDateTime.now())) {
+            throw new UserException("Verification code has expired. Please request a new one.");
+        }
+
         if (!user.getVerificationCode().equals(verificationCode)) {
             throw new UserException("Invalid verification code");
         }
-        String storedVerificationCode = user.getVerificationCode();
-        if (storedVerificationCode == null || !storedVerificationCode.equals(verificationCode)) {
-            throw new UserException("Invalid verification code");
-        }
+
         user.setIsVerified(true);
-        user.setVerificationCode(null);
+        temporaryUsers.remove(email);
         userRepository.save(user);
     }
 
@@ -102,6 +106,9 @@ public class UserServiceImpl implements UserService {
         }
         String resetCode = generateVerificationCode();
         user.setResetCode(resetCode);
+
+        user.setCodeExpiryTime(LocalDateTime.now().plusMinutes(1));
+
         userRepository.save(user);
         String subject = "Password Reset Request";
         String body = "Dear " + user.getName() + ",\n\n" +
@@ -116,8 +123,16 @@ public class UserServiceImpl implements UserService {
         if (user == null || !user.getResetCode().equals(resetCode)) {
             throw new UserException("Invalid email or reset code");
         }
+        if (user.getCodeExpiryTime() != null && user.getCodeExpiryTime().isBefore(LocalDateTime.now())) {
+            throw new UserException("Reset code has expired. Please request a new one.");
+        }
+
+        // Hash the new password before saving
+//        user.setPassword(passwordEncoder.encode(newPassword));
+
         user.setPassword(newPassword);
         user.setResetCode(null);
+        user.setCodeExpiryTime(null);
         userRepository.save(user);
     }
 
@@ -143,10 +158,8 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public String generateVerificationCode() {
-        return UUID.randomUUID().toString();
+    private String generateVerificationCode() {
+        return String.valueOf((int)(Math.random() * 10000));
     }
-
-
 
 }

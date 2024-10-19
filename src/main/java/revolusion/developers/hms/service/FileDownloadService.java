@@ -8,11 +8,11 @@ import java.io.IOException;
 public interface FileDownloadService {
 
 
-    void generateCSV(HttpServletResponse response) throws IOException;
+    void generateCSV(Long hotelId, HttpServletResponse response) throws IOException;
 
-    void generateExcel(HttpServletResponse response) throws IOException;
+    void generateExcel(Long hotelId, HttpServletResponse response) throws IOException;
 
-    void generatePDF(HttpServletResponse response) throws IOException, DocumentException;
+    void generatePDF(Long hotelId, HttpServletResponse response) throws IOException, DocumentException;
 
 
 

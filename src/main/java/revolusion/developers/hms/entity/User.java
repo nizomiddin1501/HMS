@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -53,8 +54,13 @@ public class User {
     private String resetCode;
 
     @Column(name = "is_verified", nullable = false)
-    @Schema(description = "Indicates whether the user's email is verified", example = "false")
+    @Schema(description = "Indicates whether the user's email is verified",
+            example = "false")
     private boolean isVerified;
+
+    @Schema(hidden = true,
+            description = "Time when the verification or reset code expires")
+    private LocalDateTime codeExpiryTime;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

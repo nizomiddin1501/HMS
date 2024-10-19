@@ -1,10 +1,12 @@
 package revolusion.developers.hms.payload;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import revolusion.developers.hms.entity.status.RoomStatus;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +24,11 @@ public class RoomDto {
             example = "101",
             required = true)
     private String roomNumber;
+
+    @Schema(description = "Current status of the room",
+            example = "BOOKED")
+    @JsonIgnore
+    private RoomStatus roomStatus;
 
     @Schema(description = "The category of the room.",
             required = true)

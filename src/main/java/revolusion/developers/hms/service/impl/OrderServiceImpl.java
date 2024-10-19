@@ -1,13 +1,12 @@
 package revolusion.developers.hms.service.impl;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Order;
 import revolusion.developers.hms.entity.Room;
-import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.entity.status.OrderStatus;
+import revolusion.developers.hms.entity.status.RoomStatus;
 import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.mapper.OrderMapper;
@@ -15,10 +14,10 @@ import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.payload.OrderUpdateRequest;
 import revolusion.developers.hms.payload.PaymentDto;
 import revolusion.developers.hms.repository.OrderRepository;
-import revolusion.developers.hms.repository.PaymentRepository;
 import revolusion.developers.hms.repository.RoomRepository;
 import revolusion.developers.hms.service.OrderService;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +46,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) throws OrderException {
-
         Order order = orderMapper.dtoToOrder(orderDto);
 
         if (order.getUser() == null || order.getUser().getId() == null) {
@@ -72,7 +70,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setOrderStatus(OrderStatus.PENDING);
-
         order.setRoom(room);
         order.setOrderDate(LocalDate.now());
 
@@ -82,7 +79,6 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(totalAmount);
 
         Order savedOrder = orderRepository.save(order);
-
         return orderMapper.orderToDto(savedOrder);
     }
 
@@ -117,6 +113,17 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", orderDto.getRoomDto().getId()));
          existingOrder.setRoom(room);
 
+        if (orderDto.getDeadline() != null) {
+            existingOrder.setDeadline(orderDto.getDeadline());
+        }
+
+        if (existingOrder.getDeadline() != null && existingOrder.getDeadline().isBefore(LocalDateTime.now())) {
+            existingOrder.setOrderStatus(OrderStatus.CANCELLED);
+            room.setRoomStatus(RoomStatus.AVAILABLE);
+            roomRepository.save(room);
+            throw new OrderException("Orderning amal qilish muddati tugagan.");
+        }
+
         Order updatedOrder = orderRepository.save(existingOrder);
         return orderMapper.orderToDto(updatedOrder);
     }
@@ -127,25 +134,4 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order", " Id ", orderId));
         orderRepository.delete(order);
     }
-
-//    private Order dtoToOrder(OrderDto orderDto) {
-//        Order order = new Order();
-//        order.setId(orderDto.getId());
-//        order.setCheckInDate(orderDto.getCheckInDate());
-//        order.setCheckOutDate(orderDto.getCheckOutDate());
-//
-//        if (orderDto.getUserDto() != null) {
-//            User user = new User();
-//            user.setId(orderDto.getUserDto().getId());
-//            user.setName(orderDto.getUserDto().getName());
-//            order.setUser(user);
-//        }
-//        if (orderDto.getRoomDto() != null) {
-//            Room room = new Room();
-//            room.setId(orderDto.getRoomDto().getId());
-//            order.setRoom(room);
-//        }
-//        return order;
-//    }
-//
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Hotel;
 import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.RoomCategory;
+import revolusion.developers.hms.entity.status.RoomStatus;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.mapper.RoomMapper;
@@ -61,6 +62,7 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel", " Id ", roomDto.getHotelDto().getId()));
 
         room.setRoomCategory(existingCategory);
+        room.setRoomStatus(RoomStatus.AVAILABLE);
         room.setHotel(hotel);
 
         Room savedRoom = roomRepository.save(room);
@@ -80,6 +82,7 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel", "Id", roomDto.getHotelDto().getId()));
 
         existingRoom.setRoomCategory(existingCategory);
+        existingRoom.setRoomStatus(RoomStatus.AVAILABLE);
         existingRoom.setHotel(hotel);
 
         Room updatedRoom = roomRepository.save(existingRoom);

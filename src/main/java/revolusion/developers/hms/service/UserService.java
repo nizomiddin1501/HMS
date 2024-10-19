@@ -15,7 +15,7 @@ public interface UserService {
 
     Optional<UserDto> getUserById(Long userId) throws ResourceNotFoundException;
 
-    UserDto createUser(UserDto userDto) throws UserException;
+    void createUser(UserDto userDto) throws UserException;
 
     void verifyUser(String email, String verificationCode) throws UserException;
 

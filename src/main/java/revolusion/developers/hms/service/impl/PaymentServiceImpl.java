@@ -9,12 +9,17 @@ import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.*;
 import revolusion.developers.hms.entity.status.OrderStatus;
 import revolusion.developers.hms.entity.status.PaymentStatus;
+import revolusion.developers.hms.entity.status.RoomStatus;
 import revolusion.developers.hms.exceptions.PaymentException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.mapper.PaymentMapper;
 import revolusion.developers.hms.payload.PaymentDto;
 import revolusion.developers.hms.repository.*;
 import revolusion.developers.hms.service.PaymentService;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -25,6 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserPaymentRepository userPaymentRepository;
     private final HotelRepository hotelRepository;
     private final OrderRepository orderRepository;
+    private final RoomRepository roomRepository;
     private final PaymentMapper paymentMapper;
 
 
@@ -54,12 +60,21 @@ public class PaymentServiceImpl implements PaymentService {
         }
         Order order = orderRepository.findById(paymentDto.getOrderDto().getId())
                 .orElseThrow(() -> new PaymentException("Buyurtma topilmadi."));
-        if (!order.getOrderStatus().equals(OrderStatus.PENDING)) {
-            throw new PaymentException("Order must be pending to create a payment.");
+
+        if (paymentDto.getPaymentStatus() == PaymentStatus.PAID) {
+            payment.setPaymentDate(Date.valueOf(LocalDate.now()));
+            payment.setPaymentStatus(PaymentStatus.PAID);
+
+            order.setOrderStatus(OrderStatus.CONFIRMED);
+            orderRepository.save(order);
+
+            Room room = order.getRoom();
+            room.setRoomStatus(RoomStatus.BOOKED);
+            roomRepository.save(room);
+        } else if (paymentDto.getPaymentStatus() == PaymentStatus.FAILED) {
+            throw new PaymentException("Payment failed.");
         }
-        payment.setOrder(order);
-        payment.setPaymentStatus(PaymentStatus.PENDING);
-        payment.setAmount(order.getTotalAmount());
+
         Payment savedPayment = paymentRepository.save(payment);
         return paymentMapper.paymentToDto(savedPayment);
     }
@@ -73,7 +88,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", " Id ", paymentId));
         Order order = existingPayment.getOrder();
         if (order == null || order.getUser() == null) {
-            throw new PaymentException("Foydalanuvchi yoki buyurtma topilmadi.");
+            throw new PaymentException("Order not found for the payment.");
         }
         User user = order.getUser();
         UserPayment userPayment = userPaymentRepository.findByUserId(user.getId());
@@ -82,6 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
             paymentRepository.save(existingPayment);
             throw new PaymentException("Foydalanuvchi to'lov ma'lumotlari topilmadi.");
         }
+
         Hotel hotel = hotelRepository.findById(order.getRoom().getHotel().getId())
                 .orElseThrow(() -> new PaymentException("Mehmonxona topilmadi."));
         if (userPayment.getBalance() < existingPayment.getAmount()) {
@@ -89,13 +105,34 @@ public class PaymentServiceImpl implements PaymentService {
             paymentRepository.save(existingPayment);
             throw new PaymentException("Balance da yetarli mablag' mavjud emas.");
         }
+
+        Room room = order.getRoom();
+        if (room.getRoomStatus() != RoomStatus.BOOKED) {
+            room.setRoomStatus(RoomStatus.BOOKED);
+            roomRepository.save(room);
+        }
+
+        if (order.getDeadline() != null && order.getDeadline().isBefore(LocalDateTime.now())) {
+            order.setOrderStatus(OrderStatus.CANCELLED);
+            room.setRoomStatus(RoomStatus.AVAILABLE);
+            roomRepository.save(room);
+            orderRepository.save(order);
+            existingPayment.setPaymentStatus(PaymentStatus.FAILED);
+            paymentRepository.save(existingPayment);
+            throw new PaymentException("Orderning amal qilish muddati tugagan.");
+        }
+
         userPayment.setBalance(userPayment.getBalance() - existingPayment.getAmount());
         userPaymentRepository.save(userPayment);
+
         hotel.setBalance(hotel.getBalance() + existingPayment.getAmount());
         hotelRepository.save(hotel);
+
         existingPayment.setAmount(order.getTotalAmount());
         existingPayment.setPaymentMethod(paymentDto.getPaymentMethod());
         existingPayment.setPaymentStatus(PaymentStatus.PAID);
+        existingPayment.setPaymentDate(Date.valueOf(LocalDate.now()));
+
         Payment updatedPayment = paymentRepository.save(existingPayment);
         return paymentMapper.paymentToDto(updatedPayment);
     }

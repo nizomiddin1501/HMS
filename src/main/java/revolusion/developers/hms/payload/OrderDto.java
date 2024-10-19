@@ -1,4 +1,6 @@
 package revolusion.developers.hms.payload;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import revolusion.developers.hms.entity.status.OrderStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -45,6 +48,12 @@ public class OrderDto {
 
     @Schema(description = "The status of the order", example = "PENDING")
     private OrderStatus orderStatus;
+
+    @Schema(description = "The deadline for the order, indicating the last date to complete the booking.",
+            example = "2024-10-11",
+            hidden = true)
+    @JsonIgnore
+    private LocalDateTime deadline;
 
     @Schema(description = "Room associated with the order")
     private RoomDto roomDto;

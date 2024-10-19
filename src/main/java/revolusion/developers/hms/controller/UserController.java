@@ -30,8 +30,6 @@ public class UserController {
     private final UserService userService;
     private final EmailService emailService;
 
-
-
     /**
      * Retrieve a paginated list of all users.
      *
@@ -99,26 +97,26 @@ public class UserController {
     /**
      * Creates a new user.
      *
-     * This method validates the incoming user data (received via DTO) and saves it to the database
-     * if valid. After creating the user, an email is sent to notify the user of the successful registration.
+     * This method validates the incoming user data (received via DTO) and sends a verification code
+     * to the user's email. User data will not be saved in the database until the verification is completed.
      *
      * @param userDto the DTO containing the user information to be saved
-     * @return a ResponseEntity containing a CustomApiResponse with the saved user data
+     * @return a ResponseEntity containing a CustomApiResponse with the message of successful creation initiation
      */
-    @Operation(summary = "Create a new User", description = "Create a new user record.")
-    @ApiResponse(responseCode = "201", description = "User created successfully.")
+    @Operation(summary = "Create a new User", description = "Creates a new user and sends a verification code to the email.")
+    @ApiResponse(responseCode = "201", description = "User creation process initiated successfully.")
     @PostMapping
-    public ResponseEntity<CustomApiResponse<UserDto>> createUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<CustomApiResponse<String>> createUser(@Valid @RequestBody UserDto userDto) {
         try {
-            UserDto savedUser = userService.createUser(userDto);
-            CustomApiResponse<UserDto> response = new CustomApiResponse<>(
-                    "User created successfully",
+            userService.createUser(userDto);
+            CustomApiResponse<String> response = new CustomApiResponse<>(
+                    "User creation process initiated successfully. Please verify your email.",
                     true,
-                    savedUser
+                    null
             );
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (UserException e) {
-            CustomApiResponse<UserDto> response = new CustomApiResponse<>(
+            CustomApiResponse<String> response = new CustomApiResponse<>(
                     e.getMessage(),
                     false,
                     null
@@ -130,12 +128,16 @@ public class UserController {
 
 
     /**
-     * Verify the user's email using the verification code.
+     * Verifies the user's email using the verification code.
+     *
+     * After verification, the user's data is saved in the database.
      *
      * @param email the email of the user
      * @param verificationCode the verification code sent to the user
      * @return a ResponseEntity indicating the result of the verification
      */
+    @Operation(summary = "Verify User Email", description = "Verifies the user's email with the provided verification code.")
+    @ApiResponse(responseCode = "200", description = "User verified successfully.")
     @PostMapping("/verify")
     public ResponseEntity<CustomApiResponse<String>> verifyUser(
             @RequestParam String email,
@@ -143,7 +145,7 @@ public class UserController {
         try {
             userService.verifyUser(email, verificationCode);
             CustomApiResponse<String> response = new CustomApiResponse<>(
-                    "User verified successfully",
+                    "User verified successfully. Your account is now active.",
                     true,
                     null
             );

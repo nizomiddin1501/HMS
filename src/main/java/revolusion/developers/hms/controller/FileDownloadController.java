@@ -31,13 +31,14 @@ public class FileDownloadController {
      * If successful, it returns a success message; otherwise, it returns an error message.
      *
      * @param response the HttpServletResponse to write the CSV file to
+     * @param hotelId  the ID of the hotel for which to generate the report
      * @return ResponseEntity containing a CustomApiResponse with the operation status
      * @throws IOException if an input or output exception occurs
      */
     @GetMapping("/download/csv")
-    public ResponseEntity<CustomApiResponse<Void>> downloadCSV(HttpServletResponse response) throws IOException {
+    public ResponseEntity<CustomApiResponse<Void>> downloadCSV(@PathVariable Long hotelId, HttpServletResponse response) throws IOException {
         try {
-            fileDownloadService.generateCSV(response);
+            fileDownloadService.generateCSV(hotelId, response);
             return ResponseEntity.ok(new CustomApiResponse<>("CSV file generated successfully.", true, null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -52,13 +53,14 @@ public class FileDownloadController {
      * If successful, it returns a success message; otherwise, it returns an error message.
      *
      * @param response the HttpServletResponse to write the Excel file to
+     * @param hotelId  the ID of the hotel for which to generate the report
      * @return ResponseEntity containing a CustomApiResponse with the operation status
      * @throws IOException if an input or output exception occurs
      */
     @GetMapping("/download/excel")
-    public ResponseEntity<CustomApiResponse<Void>> downloadExcel(HttpServletResponse response) throws IOException {
+    public ResponseEntity<CustomApiResponse<Void>> downloadExcel(@PathVariable Long hotelId, HttpServletResponse response) throws IOException {
         try {
-            fileDownloadService.generateExcel(response);
+            fileDownloadService.generateExcel(hotelId, response);
             return ResponseEntity.ok(new CustomApiResponse<>("Excel file generated successfully.", true, null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -73,14 +75,15 @@ public class FileDownloadController {
      * If successful, it returns a success message; otherwise, it returns an error message.
      *
      * @param response the HttpServletResponse to write the PDF file to
+     * @param hotelId  the ID of the hotel for which to generate the report
      * @return ResponseEntity containing a CustomApiResponse with the operation status
      * @throws IOException if an input or output exception occurs
      * @throws DocumentException if an error occurs during PDF generation
      */
     @GetMapping("/download/pdf")
-    public ResponseEntity<CustomApiResponse<Void>> downloadPDF(HttpServletResponse response) throws IOException, DocumentException {
+    public ResponseEntity<CustomApiResponse<Void>> downloadPDF(@PathVariable Long hotelId, HttpServletResponse response) throws IOException, DocumentException {
         try {
-            fileDownloadService.generatePDF(response);
+            fileDownloadService.generatePDF(hotelId, response);
             return ResponseEntity.ok(new CustomApiResponse<>("PDF file generated successfully.", true, null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

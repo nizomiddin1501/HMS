@@ -1,9 +1,11 @@
 package revolusion.developers.hms.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import revolusion.developers.hms.entity.status.RoomStatus;
 
 @Data
 @AllArgsConstructor
@@ -23,6 +25,12 @@ public class Room {
             example = "101",
             required = true)
     private String roomNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "room_status", nullable = false)
+    @Schema(description = "The current status of the room",
+            example = "BOOKED")
+    private RoomStatus roomStatus;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
