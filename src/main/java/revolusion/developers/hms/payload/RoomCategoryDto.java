@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "RoomCategoryDto represents data transfer object for room category.")
 public class RoomCategoryDto {
 
-
     @Schema(description = "Unique ID of the room category",
             example = "1")
     private Long id;

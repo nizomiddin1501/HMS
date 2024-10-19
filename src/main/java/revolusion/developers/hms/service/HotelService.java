@@ -12,13 +12,13 @@ public interface HotelService {
 
     Page<HotelDto> getAllHotels(int page, int size);
 
-    Optional<HotelDto> getHotelById(Long hotelId) throws ResourceNotFoundException;
+    Optional<HotelDto> getHotelById(Long hotelId);
 
-    HotelDto createHotel(HotelDto hotelDto) throws HotelException;
+    HotelDto createHotel(HotelDto hotelDto);
 
-    HotelDto updateHotel(Long hotelId, HotelDto hotelDto) throws ResourceNotFoundException;
+    HotelDto updateHotel(Long hotelId, HotelDto hotelDto);
 
-    void deleteHotel(Long hotelId) throws ResourceNotFoundException;
+    void deleteHotel(Long hotelId);
 
 
 

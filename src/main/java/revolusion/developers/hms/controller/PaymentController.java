@@ -3,7 +3,7 @@ package revolusion.developers.hms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,21 +20,12 @@ import java.util.Optional;
  * including creating, updating, retrieving, and deleting payment information.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
 
-    /**
-     * Constructor for PaymentController.
-     *
-     * @param paymentService the service to manage payment records
-     * @Autowired automatically injects the PaymentService bean
-     */
-    @Autowired
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
-    }
 
 
 

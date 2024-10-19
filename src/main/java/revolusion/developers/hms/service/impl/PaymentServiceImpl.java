@@ -11,6 +11,7 @@ import revolusion.developers.hms.entity.status.OrderStatus;
 import revolusion.developers.hms.entity.status.PaymentStatus;
 import revolusion.developers.hms.exceptions.PaymentException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
+import revolusion.developers.hms.mapper.PaymentMapper;
 import revolusion.developers.hms.payload.PaymentDto;
 import revolusion.developers.hms.repository.*;
 import revolusion.developers.hms.service.PaymentService;
@@ -20,32 +21,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private final ModelMapper modelMapper;
     private final PaymentRepository paymentRepository;
     private final UserPaymentRepository userPaymentRepository;
     private final HotelRepository hotelRepository;
     private final OrderRepository orderRepository;
+    private final PaymentMapper paymentMapper;
 
 
 
     @Override
     public Page<PaymentDto> getAllPayments(int page, int size) {
         Page<Payment> paymentsPage = paymentRepository.findAll(PageRequest.of(page, size));
-        return paymentsPage.map(this::paymentToDto);
+        return paymentsPage.map(paymentMapper::paymentToDto);
     }
 
     @Override
     public Optional<PaymentDto> getPaymentById(Long paymentId) throws ResourceNotFoundException {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", " Id ", paymentId));
-        PaymentDto paymentDto = paymentToDto(payment);
-        return Optional.ofNullable(paymentDto);
+        return Optional.of(paymentMapper.paymentToDto(payment));
     }
 
     @Override
     @Transactional
     public PaymentDto createPayment(@Valid PaymentDto paymentDto) throws PaymentException {
-        Payment payment = dtoToPayment(paymentDto);
+        Payment payment = paymentMapper.dtoToPayment(paymentDto);
         if (payment.getAmount() == null || payment.getAmount() <= 0) {
             throw new PaymentException("Amount must be greater than zero.");
         }
@@ -61,7 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentStatus(PaymentStatus.PENDING);
         payment.setAmount(order.getTotalAmount());
         Payment savedPayment = paymentRepository.save(payment);
-        return paymentToDto(savedPayment);
+        return paymentMapper.paymentToDto(savedPayment);
     }
 
 
@@ -97,7 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
         existingPayment.setPaymentMethod(paymentDto.getPaymentMethod());
         existingPayment.setPaymentStatus(PaymentStatus.PAID);
         Payment updatedPayment = paymentRepository.save(existingPayment);
-        return paymentToDto(updatedPayment);
+        return paymentMapper.paymentToDto(updatedPayment);
     }
 
 
@@ -108,15 +108,4 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", " Id ", paymentId));
         paymentRepository.delete(payment);
     }
-
-
-    private Payment dtoToPayment(PaymentDto paymentDto) {
-        return modelMapper.map(paymentDto, Payment.class);
-    }
-
-
-    public PaymentDto paymentToDto(Payment payment) {
-        return modelMapper.map(payment, PaymentDto.class);
-    }
-
 }

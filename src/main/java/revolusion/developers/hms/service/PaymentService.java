@@ -13,13 +13,13 @@ public interface PaymentService {
 
     Page<PaymentDto> getAllPayments(int page, int size);
 
-    Optional<PaymentDto> getPaymentById(Long paymentId) throws ResourceNotFoundException;
+    Optional<PaymentDto> getPaymentById(Long paymentId);
 
-    PaymentDto createPayment(PaymentDto paymentDto) throws PaymentException;
+    PaymentDto createPayment(PaymentDto paymentDto);
 
-    PaymentDto updatePayment(Long paymentId, PaymentDto paymentDto) throws ResourceNotFoundException;
+    PaymentDto updatePayment(Long paymentId, PaymentDto paymentDto);
 
-    void deletePayment(Long paymentId) throws ResourceNotFoundException;
+    void deletePayment(Long paymentId);
 
 
 

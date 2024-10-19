@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "Role entity represents the different roles available for users.")
 public class Role {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Unique ID of the role",
@@ -23,17 +22,4 @@ public class Role {
     @Column(name = "role_name", nullable = false, unique = true)
     @Schema(description = "Name of the role", example = "ADMIN", required = true)
     private String name;
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

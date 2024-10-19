@@ -15,7 +15,6 @@ import java.util.Set;
 @Schema(description = "User entity represents a registered user in the system.")
 public class User {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "Unique ID of the user",

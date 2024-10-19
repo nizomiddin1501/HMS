@@ -11,13 +11,13 @@ public interface UserPaymentService {
 
     Page<UserPaymentDto> getAllUserPayments(int page, int size);
 
-    Optional<UserPaymentDto> getUserPaymentById(Long userPaymentId) throws ResourceNotFoundException;
+    Optional<UserPaymentDto> getUserPaymentById(Long userPaymentId);
 
-    UserPaymentDto createUserPayment(UserPaymentDto userPaymentDto) throws UserPaymentException;
+    UserPaymentDto createUserPayment(UserPaymentDto userPaymentDto);
 
-    UserPaymentDto updateUserPayment(Long userPaymentId, UserPaymentDto userPaymentDto) throws ResourceNotFoundException;
+    UserPaymentDto updateUserPayment(Long userPaymentId, UserPaymentDto userPaymentDto);
 
-    void deleteUserPayment(Long userPaymentId) throws ResourceNotFoundException;
+    void deleteUserPayment(Long userPaymentId);
 
 
 

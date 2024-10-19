@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Hotel;
 import revolusion.developers.hms.entity.Order;
+import revolusion.developers.hms.mapper.HotelMapper;
+import revolusion.developers.hms.mapper.OrderMapper;
 import revolusion.developers.hms.payload.HotelDto;
 import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.repository.HotelRepository;
@@ -29,20 +31,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FileDownloadServiceImpl implements FileDownloadService {
 
-    private final ModelMapper modelMapper;
     private final HotelRepository hotelRepository;
     private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
+    private final HotelMapper hotelMapper;
 
 
 
     @Override
     public void generateCSV(HttpServletResponse response) throws IOException {
         List<HotelDto> hotels = hotelRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(hotelMapper::hotelToDto)
                 .collect(Collectors.toList());
 
         List<OrderDto> orders = orderRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(orderMapper::orderToDto)
                 .collect(Collectors.toList());
 
         response.setContentType("text/csv");
@@ -71,11 +74,11 @@ public class FileDownloadServiceImpl implements FileDownloadService {
     @Override
     public void generateExcel(HttpServletResponse response) throws IOException {
         List<HotelDto> hotels = hotelRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(hotelMapper::hotelToDto)
                 .collect(Collectors.toList());
 
         List<OrderDto> orders = orderRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(orderMapper::orderToDto)
                 .collect(Collectors.toList());
 
         Workbook workbook = new XSSFWorkbook();
@@ -132,11 +135,11 @@ public class FileDownloadServiceImpl implements FileDownloadService {
     @Override
     public void generatePDF(HttpServletResponse response) throws IOException, DocumentException {
         List<HotelDto> hotels = hotelRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(hotelMapper::hotelToDto)
                 .collect(Collectors.toList());
 
         List<OrderDto> orders = orderRepository.findAll().stream()
-                .map(this::convertToDto)
+                .map(orderMapper::orderToDto)
                 .collect(Collectors.toList());
 
         response.setContentType("application/pdf");
@@ -172,13 +175,5 @@ public class FileDownloadServiceImpl implements FileDownloadService {
             document.add(new Paragraph(" "));
         }
         document.close();
-    }
-
-
-    private HotelDto convertToDto(Hotel hotel) {
-        return modelMapper.map(hotel, HotelDto.class);
-    }
-    private OrderDto convertToDto(Order order) {
-        return modelMapper.map(order, OrderDto.class);
     }
 }

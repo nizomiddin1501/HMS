@@ -9,6 +9,7 @@ import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.entity.UserPayment;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserPaymentException;
+import revolusion.developers.hms.mapper.UserPaymentMapper;
 import revolusion.developers.hms.payload.UserPaymentDto;
 import revolusion.developers.hms.repository.UserPaymentRepository;
 import revolusion.developers.hms.repository.UserRepository;
@@ -19,29 +20,28 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserPaymentServiceImpl implements UserPaymentService {
 
-    private final ModelMapper modelMapper;
     private final UserPaymentRepository userPaymentRepository;
     private final UserRepository userRepository;
+    private final UserPaymentMapper userPaymentMapper;
 
 
 
     @Override
     public Page<UserPaymentDto> getAllUserPayments(int page, int size) {
         Page<UserPayment> userPaymentsPage = userPaymentRepository.findAll(PageRequest.of(page, size));
-        return userPaymentsPage.map(this::userPaymentToDto);
+        return userPaymentsPage.map(userPaymentMapper::userPaymentToDto);
     }
 
     @Override
     public Optional<UserPaymentDto> getUserPaymentById(Long userPaymentId) throws ResourceNotFoundException {
         UserPayment userPayment = userPaymentRepository.findById(userPaymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("UserPayment", " Id", userPaymentId));
-        UserPaymentDto userPaymentDto = userPaymentToDto(userPayment);
-        return Optional.ofNullable(userPaymentDto);
+        return Optional.of(userPaymentMapper.userPaymentToDto(userPayment));
     }
 
     @Override
     public UserPaymentDto createUserPayment(UserPaymentDto userPaymentDto) throws UserPaymentException {
-        UserPayment userPayment = dtoToUserPayment(userPaymentDto);
+        UserPayment userPayment = userPaymentMapper.dtoToUserPayment(userPaymentDto);
         if (userPayment.getAccountNumber() == null || userPayment.getAccountNumber().isEmpty()) {
             throw new UserPaymentException("UserPayment accountNumber cannot be null or empty");
         }
@@ -54,7 +54,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
 
         userPayment.setUser(existingUser);
         UserPayment savedUserPayment = userPaymentRepository.save(userPayment);
-        return userPaymentToDto(savedUserPayment);
+        return userPaymentMapper.userPaymentToDto(savedUserPayment);
     }
 
 
@@ -66,7 +66,7 @@ public class UserPaymentServiceImpl implements UserPaymentService {
         existingUserPayment.setBalance(userPaymentDto.getBalance());
         existingUserPayment.setAccountNumber(userPaymentDto.getAccountNumber());
         UserPayment updatedUserPayment = userPaymentRepository.save(existingUserPayment);
-        return userPaymentToDto(updatedUserPayment);
+        return userPaymentMapper.userPaymentToDto(updatedUserPayment);
     }
 
     @Override
@@ -77,11 +77,6 @@ public class UserPaymentServiceImpl implements UserPaymentService {
     }
 
 
-    private UserPayment dtoToUserPayment(UserPaymentDto userPaymentDto) {
-        return modelMapper.map(userPaymentDto, UserPayment.class);
-    }
-    public UserPaymentDto userPaymentToDto(UserPayment userPayment) {
-        return modelMapper.map(userPayment, UserPaymentDto.class);
-    }
+
 
 }

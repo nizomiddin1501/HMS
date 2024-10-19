@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserException;
+import revolusion.developers.hms.mapper.UserMapper;
 import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.repository.UserRepository;
 import revolusion.developers.hms.service.EmailService;
@@ -20,28 +21,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final UserMapper userMapper;
 
 
     @Override
     public Page<UserDto> getAllUsers(int page, int size) {
         Page<User> usersPage = userRepository.findAll(PageRequest.of(page, size));
-        return usersPage.map(this::userToDto);
+        return usersPage.map(userMapper::userToDto);
     }
 
     @Override
     public Optional<UserDto> getUserById(Long userId) throws ResourceNotFoundException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", " Id", userId));
-        UserDto userDto = userToDto(user);
-        return Optional.ofNullable(userDto);
+        return Optional.of(userMapper.userToDto(user));
     }
 
     @Override
     public UserDto createUser(UserDto userDto) throws UserException {
-        User user = dtoToUser(userDto);
+        User user = userMapper.dtoToUser(userDto);
         if (user.getName() == null ||
                 user.getName().isEmpty() ||
                 user.getEmail() == null ||
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
                 "Please verify your email using the following code: " + verificationCode +
                 "\n\nThank you!";
         emailService.sendEmail(toEmail, subject, body);
-        return userToDto(savedUser);
+        return userMapper.userToDto(savedUser);
     }
 
 
@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
         }
         existingUser.setAbout(userDto.getAbout());
         User updatedUser = userRepository.save(existingUser);
-        return userToDto(updatedUser);
+        return userMapper.userToDto(updatedUser);
     }
 
     @Override
@@ -146,12 +146,7 @@ public class UserServiceImpl implements UserService {
     public String generateVerificationCode() {
         return UUID.randomUUID().toString();
     }
-    private User dtoToUser(UserDto userDto) {
-        return modelMapper.map(userDto, User.class);
-    }
-    public UserDto userToDto(User user) {
-        return modelMapper.map(user, UserDto.class);
-    }
+
 
 
 }

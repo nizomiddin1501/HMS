@@ -2,13 +2,13 @@ package revolusion.developers.hms.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.RoomCategory;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomCategoryException;
+import revolusion.developers.hms.mapper.RoomCategoryMapper;
 import revolusion.developers.hms.payload.RoomCategoryDto;
 import revolusion.developers.hms.repository.RoomCategoryRepository;
 import revolusion.developers.hms.service.RoomCategoryService;
@@ -18,28 +18,27 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoomCategoryServiceImpl implements RoomCategoryService {
 
-    private final ModelMapper modelMapper;
     private final RoomCategoryRepository roomCategoryRepository;
+    private final RoomCategoryMapper roomCategoryMapper;
 
 
 
     @Override
     public Page<RoomCategoryDto> getAllRoomCategories(int page, int size) {
         Page<RoomCategory> roomCategoryPages = roomCategoryRepository.findAll(PageRequest.of(page, size));
-        return roomCategoryPages.map(this::roomCategoryToDto);
+        return roomCategoryPages.map(roomCategoryMapper::roomCategoryToDto);
     }
 
     @Override
     public Optional<RoomCategoryDto> getRoomCategoryById(Long roomCategoryId) throws ResourceNotFoundException {
         RoomCategory roomCategory = roomCategoryRepository.findById(roomCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("RoomCategory", " Id ", roomCategoryId));
-        RoomCategoryDto roomCategoryDto = roomCategoryToDto(roomCategory);
-        return Optional.ofNullable(roomCategoryDto);
+        return Optional.of(roomCategoryMapper.roomCategoryToDto(roomCategory));
     }
 
     @Override
     public RoomCategoryDto createRoomCategory(RoomCategoryDto roomCategoryDto) throws RoomCategoryException {
-        RoomCategory roomCategory = dtoToRoomCategory(roomCategoryDto);
+        RoomCategory roomCategory = roomCategoryMapper.dtoToRoomCategory(roomCategoryDto);
         if (roomCategory.getCategoryName() == null){
             throw new RoomCategoryException("Room category name must not be null");
         }
@@ -48,18 +47,18 @@ public class RoomCategoryServiceImpl implements RoomCategoryService {
             throw new RoomCategoryException("Room category with this categoryName already exists");
         }
         RoomCategory savedRoomCategory = roomCategoryRepository.save(roomCategory);
-        return roomCategoryToDto(savedRoomCategory);
+        return roomCategoryMapper.roomCategoryToDto(savedRoomCategory);
     }
 
     @Override
     public RoomCategoryDto updateRoomCategory(Long roomCategoryId, RoomCategoryDto roomCategoryDto) throws ResourceNotFoundException {
         RoomCategory existingRoomCategory = roomCategoryRepository.findById(roomCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("RoomCategory", " Id ", roomCategoryId));
-        RoomCategory roomCategoryDetails = dtoToRoomCategory(roomCategoryDto);
+        RoomCategory roomCategoryDetails = roomCategoryMapper.dtoToRoomCategory(roomCategoryDto);
         existingRoomCategory.setCategoryName(roomCategoryDetails.getCategoryName());
         existingRoomCategory.setPrice(roomCategoryDetails.getPrice());
         RoomCategory updatedRoomCategory = roomCategoryRepository.save(existingRoomCategory);
-        return roomCategoryToDto(updatedRoomCategory);
+        return roomCategoryMapper.roomCategoryToDto(updatedRoomCategory);
     }
 
     @Override
@@ -68,13 +67,4 @@ public class RoomCategoryServiceImpl implements RoomCategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("RoomCategory", " Id ", roomCategoryId));
         roomCategoryRepository.delete(roomCategory);
     }
-
-
-    private RoomCategory dtoToRoomCategory(RoomCategoryDto roomCategoryDto) {
-        return modelMapper.map(roomCategoryDto, RoomCategory.class);
-    }
-    public RoomCategoryDto roomCategoryToDto(RoomCategory roomCategory) {
-        return modelMapper.map(roomCategory, RoomCategoryDto.class);
-    }
-
 }

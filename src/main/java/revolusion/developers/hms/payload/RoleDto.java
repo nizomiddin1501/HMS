@@ -21,12 +21,4 @@ public class RoleDto {
             required = true)
     private String name;
 
-
-
-
-
-
-
-
-
 }

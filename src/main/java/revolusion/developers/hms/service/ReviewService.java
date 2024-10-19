@@ -13,13 +13,13 @@ public interface ReviewService {
 
     Page<ReviewDto> getAllReviews(int page, int size);
 
-    Optional<ReviewDto> getReviewById(Long reviewId) throws ResourceNotFoundException;
+    Optional<ReviewDto> getReviewById(Long reviewId);
 
-    ReviewDto createReview(ReviewDto reviewDto) throws ReviewException;
+    ReviewDto createReview(ReviewDto reviewDto);
 
-    ReviewDto updateReview(Long reviewId, ReviewDto reviewDto) throws ResourceNotFoundException;
+    ReviewDto updateReview(Long reviewId, ReviewDto reviewDto);
 
-    void deleteReview(Long reviewId) throws ResourceNotFoundException;
+    void deleteReview(Long reviewId);
 
 
 

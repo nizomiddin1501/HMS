@@ -44,7 +44,6 @@ public class UserDto {
             example = "A regular hotel customer.")
     private String about;
 
-
     @Schema(description = "Verification code sent to the user's email for verification.")
     private String verificationCode;
 
@@ -53,8 +52,6 @@ public class UserDto {
 
     @Schema(description = "Indicates whether the user's email is verified or not.")
     private boolean isVerified;
-
-
 
 
     @Schema(description = "Roles assigned to the user.")

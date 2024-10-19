@@ -16,7 +16,6 @@ import java.time.LocalDate;
 @Schema(description = "Order DTO is used for transferring order data across the application.")
 public class OrderDto {
 
-
     @Schema(description = "Unique ID of the order",
             example = "1")
     private Long id;

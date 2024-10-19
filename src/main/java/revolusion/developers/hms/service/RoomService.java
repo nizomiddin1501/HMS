@@ -12,11 +12,11 @@ public interface RoomService {
 
     Page<RoomDto> getAllRooms(int page, int size);
 
-    Optional<RoomDto> getRoomById(Long roomId) throws ResourceNotFoundException;
+    Optional<RoomDto> getRoomById(Long roomId);
 
-    RoomDto createRoom(RoomDto roomDto) throws RoomException;
+    RoomDto createRoom(RoomDto roomDto);
 
-    RoomDto updateRoom(Long roomId, RoomDto roomDto) throws ResourceNotFoundException;
+    RoomDto updateRoom(Long roomId, RoomDto roomDto);
 
-    void deleteRoom(Long roomId) throws ResourceNotFoundException;
+    void deleteRoom(Long roomId);
 }

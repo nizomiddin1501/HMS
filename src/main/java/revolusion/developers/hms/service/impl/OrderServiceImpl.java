@@ -10,6 +10,7 @@ import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.entity.status.OrderStatus;
 import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
+import revolusion.developers.hms.mapper.OrderMapper;
 import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.payload.OrderUpdateRequest;
 import revolusion.developers.hms.payload.PaymentDto;
@@ -26,31 +27,28 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    private final ModelMapper modelMapper;
     private final OrderRepository orderRepository;
     private final RoomRepository roomRepository;
-
-    private final PaymentRepository paymentRepository;
+    private final OrderMapper orderMapper;
 
 
     @Override
     public Page<OrderDto> getAllOrders(int page, int size) {
         Page<Order> ordersPage = orderRepository.findAll(PageRequest.of(page, size));
-        return ordersPage.map(this::orderToDto);
+        return ordersPage.map(orderMapper::orderToDto);
     }
 
     @Override
     public Optional<OrderDto> getOrderById(Long orderId) throws ResourceNotFoundException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", " Id ", orderId));
-        OrderDto orderDto = orderToDto(order);
-        return Optional.ofNullable(orderDto);
+        return Optional.of(orderMapper.orderToDto(order));
     }
 
     @Override
     public OrderDto createOrder(OrderDto orderDto) throws OrderException {
 
-        Order order = dtoToOrder(orderDto);
+        Order order = orderMapper.dtoToOrder(orderDto);
 
         if (order.getUser() == null || order.getUser().getId() == null) {
             throw new OrderException("User is required for the order.");
@@ -85,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return orderToDto(savedOrder);
+        return orderMapper.orderToDto(savedOrder);
     }
 
     @Override
@@ -120,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
          existingOrder.setRoom(room);
 
         Order updatedOrder = orderRepository.save(existingOrder);
-        return orderToDto(updatedOrder);
+        return orderMapper.orderToDto(updatedOrder);
     }
 
     @Override
@@ -130,32 +128,24 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
-
 //    private Order dtoToOrder(OrderDto orderDto) {
-//        return modelMapper.map(orderDto, Order.class);
+//        Order order = new Order();
+//        order.setId(orderDto.getId());
+//        order.setCheckInDate(orderDto.getCheckInDate());
+//        order.setCheckOutDate(orderDto.getCheckOutDate());
+//
+//        if (orderDto.getUserDto() != null) {
+//            User user = new User();
+//            user.setId(orderDto.getUserDto().getId());
+//            user.setName(orderDto.getUserDto().getName());
+//            order.setUser(user);
+//        }
+//        if (orderDto.getRoomDto() != null) {
+//            Room room = new Room();
+//            room.setId(orderDto.getRoomDto().getId());
+//            order.setRoom(room);
+//        }
+//        return order;
 //    }
-
-    private Order dtoToOrder(OrderDto orderDto) {
-        Order order = new Order();
-        order.setId(orderDto.getId());
-        order.setCheckInDate(orderDto.getCheckInDate());
-        order.setCheckOutDate(orderDto.getCheckOutDate());
-
-        if (orderDto.getUserDto() != null) {
-            User user = new User();
-            user.setId(orderDto.getUserDto().getId());
-            user.setName(orderDto.getUserDto().getName());
-            order.setUser(user);
-        }
-        if (orderDto.getRoomDto() != null) {
-            Room room = new Room();
-            room.setId(orderDto.getRoomDto().getId());
-            order.setRoom(room);
-        }
-        return order;
-    }
-    public OrderDto orderToDto(Order order) {
-        return modelMapper.map(order, OrderDto.class);
-    }
-
+//
 }

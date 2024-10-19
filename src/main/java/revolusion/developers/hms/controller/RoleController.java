@@ -3,7 +3,7 @@ package revolusion.developers.hms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,21 +20,12 @@ import java.util.Optional;
  * including creating, updating, retrieving, and deleting role information.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/roles")
 public class RoleController {
 
     private final RoleService roleService;
 
-    /**
-     * Constructor for RoleController.
-     *
-     * @param roleService the service to manage role records
-     * @Autowired automatically injects the RoleService bean
-     */
-    @Autowired
-    public RoleController(RoleService roleService) {
-        this.roleService = roleService;
-    }
 
 
     /**

@@ -9,6 +9,7 @@ import revolusion.developers.hms.entity.Role;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoleException;
 import revolusion.developers.hms.exceptions.RoomException;
+import revolusion.developers.hms.mapper.RoleMapper;
 import revolusion.developers.hms.payload.RoleDto;
 import revolusion.developers.hms.repository.RoleRepository;
 import revolusion.developers.hms.service.RoleService;
@@ -18,28 +19,27 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
-    private final ModelMapper modelMapper;
     private final RoleRepository roleRepository;
+    private final RoleMapper roleMapper;
 
 
 
     @Override
     public Page<RoleDto> getAllRoles(int page, int size) {
         Page<Role> rolesPage = roleRepository.findAll(PageRequest.of(page, size));
-        return rolesPage.map(this::roleToDto);
+        return rolesPage.map(roleMapper::roleToDto);
     }
 
     @Override
     public Optional<RoleDto> getRoleById(Long roleId) throws ResourceNotFoundException {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", " Id ", roleId));
-        RoleDto roleDto = roleToDto(role);
-        return Optional.ofNullable(roleDto);
+        return Optional.of(roleMapper.roleToDto(role));
     }
 
     @Override
     public RoleDto createRole(RoleDto roleDto) throws RoleException {
-        Role role = dtoToRole(roleDto);
+        Role role = roleMapper.dtoToRole(roleDto);
         if (role.getName() == null || role.getName().isEmpty()) {
             throw new RoomException("Role name cannot be null or empty");
         }
@@ -48,7 +48,7 @@ public class RoleServiceImpl implements RoleService {
             throw new RoleException("Role with this name already exists");
         }
         Role savedRole = roleRepository.save(role);
-        return roleToDto(savedRole);
+        return roleMapper.roleToDto(savedRole);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role", " Id ", roleId));
         existingRole.setName(roleDto.getName());
         Role updatedRole = roleRepository.save(existingRole);
-        return roleToDto(updatedRole);
+        return roleMapper.roleToDto(updatedRole);
     }
 
     @Override
@@ -66,14 +66,4 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role", " Id ", roleId));
         roleRepository.delete(role);
     }
-
-
-    private Role dtoToRole(RoleDto roleDto) {
-        return modelMapper.map(roleDto, Role.class);
-    }
-    public RoleDto roleToDto(Role role) {
-        return modelMapper.map(role, RoleDto.class);
-    }
-
-
 }

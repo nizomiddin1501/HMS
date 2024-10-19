@@ -3,7 +3,7 @@ package revolusion.developers.hms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,22 +19,11 @@ import java.util.Optional;
  * including creating, updating, retrieving, and deleting hotel information.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/hotels")
 public class HotelController {
 
     private final HotelService hotelService;
-
-    /**
-     * Constructor for HotelController.
-     *
-     * @param hotelService the service to manage hotel records
-     * @Autowired automatically injects the HotelService bean
-     */
-    @Autowired
-    public HotelController(HotelService hotelService) {
-        this.hotelService = hotelService;
-    }
-
 
 
 

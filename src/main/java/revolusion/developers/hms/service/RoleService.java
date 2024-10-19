@@ -13,13 +13,13 @@ public interface RoleService {
 
     Page<RoleDto> getAllRoles(int page, int size);
 
-    Optional<RoleDto> getRoleById(Long roleId) throws ResourceNotFoundException;
+    Optional<RoleDto> getRoleById(Long roleId);
 
-    RoleDto createRole(RoleDto roleDto) throws RoleException;
+    RoleDto createRole(RoleDto roleDto);
 
-    RoleDto updateRole(Long roleId, RoleDto roleDto) throws ResourceNotFoundException;
+    RoleDto updateRole(Long roleId, RoleDto roleDto);
 
-    void deleteRole(Long roleId) throws ResourceNotFoundException;
+    void deleteRole(Long roleId);
 
 
 }

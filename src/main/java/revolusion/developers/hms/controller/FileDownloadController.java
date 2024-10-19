@@ -1,7 +1,7 @@
 package revolusion.developers.hms.controller;
 import com.itextpdf.text.DocumentException;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,23 +15,12 @@ import java.io.IOException;
  */
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/files")
 public class FileDownloadController {
 
 
     private final FileDownloadService fileDownloadService;
-
-    /**
-     * Constructor for FileDownloadController.
-     *
-     * @param fileDownloadService the service to manage file download operations
-     * @Autowired automatically injects the FileDownloadService bean
-     */
-    @Autowired
-    public FileDownloadController(FileDownloadService fileDownloadService) {
-        this.fileDownloadService = fileDownloadService;
-    }
-
 
 
 

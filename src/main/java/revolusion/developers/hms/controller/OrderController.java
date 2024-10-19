@@ -3,7 +3,7 @@ package revolusion.developers.hms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.payload.OrderUpdateRequest;
-import revolusion.developers.hms.payload.PaymentDto;
 import revolusion.developers.hms.service.OrderService;
 import java.util.Optional;
 
@@ -21,21 +20,12 @@ import java.util.Optional;
  * including creating, updating, retrieving, and deleting order information.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
 
-    /**
-     * Constructor for OrderController.
-     *
-     * @param orderService the service to manage order records
-     * @Autowired automatically injects the OrderService bean
-     */
-    @Autowired
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
 
 
 

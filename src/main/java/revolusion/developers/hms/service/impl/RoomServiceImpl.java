@@ -11,6 +11,7 @@ import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.RoomCategory;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomException;
+import revolusion.developers.hms.mapper.RoomMapper;
 import revolusion.developers.hms.payload.RoomDto;
 import revolusion.developers.hms.repository.HotelRepository;
 import revolusion.developers.hms.repository.RoomCategoryRepository;
@@ -22,10 +23,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
 
-    private final ModelMapper modelMapper;
     private final RoomRepository roomRepository;
     private final RoomCategoryRepository roomCategoryRepository;
     private final HotelRepository hotelRepository;
+    private final RoomMapper roomMapper;
 
 
 
@@ -33,20 +34,19 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Page<RoomDto> getAllRooms(int page, int size) {
         Page<Room> roomsPage = roomRepository.findAll(PageRequest.of(page, size));
-        return roomsPage.map(this::roomToDto);
+        return roomsPage.map(roomMapper::roomToDto);
     }
 
     @Override
     public Optional<RoomDto> getRoomById(Long roomId) throws ResourceNotFoundException {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new ResourceNotFoundException("Room", " Id ", roomId));
-        RoomDto roomDto = roomToDto(room);
-        return Optional.ofNullable(roomDto);
+        return Optional.of(roomMapper.roomToDto(room));
     }
 
     @Override
     public RoomDto createRoom(RoomDto roomDto) throws RoomException {
-        Room room = dtoToRoom(roomDto);
+        Room room = roomMapper.dtoToRoom(roomDto);
         if (room.getRoomNumber() == null || roomDto.getRoomCategoryDto() == null) {
             throw new RoomException("Room number and category cannot be null");
         }
@@ -64,7 +64,7 @@ public class RoomServiceImpl implements RoomService {
         room.setHotel(hotel);
 
         Room savedRoom = roomRepository.save(room);
-        return roomToDto(savedRoom);
+        return roomMapper.roomToDto(savedRoom);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class RoomServiceImpl implements RoomService {
         existingRoom.setHotel(hotel);
 
         Room updatedRoom = roomRepository.save(existingRoom);
-        return roomToDto(updatedRoom);
+        return roomMapper.roomToDto(updatedRoom);
     }
 
     @Override
@@ -92,14 +92,4 @@ public class RoomServiceImpl implements RoomService {
                 .orElseThrow(() -> new ResourceNotFoundException("Room", " Id ", roomId));
         roomRepository.delete(room);
     }
-
-
-    private Room dtoToRoom(RoomDto roomDto) {
-        return modelMapper.map(roomDto, Room.class);
-    }
-    public RoomDto roomToDto(Room room) {
-        return modelMapper.map(room, RoomDto.class);
-    }
-
-
 }

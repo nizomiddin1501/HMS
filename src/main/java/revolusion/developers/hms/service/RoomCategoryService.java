@@ -13,13 +13,13 @@ public interface RoomCategoryService {
 
     Page<RoomCategoryDto> getAllRoomCategories(int page, int size);
 
-    Optional<RoomCategoryDto> getRoomCategoryById(Long roomCategoryId) throws ResourceNotFoundException;
+    Optional<RoomCategoryDto> getRoomCategoryById(Long roomCategoryId);
 
-    RoomCategoryDto createRoomCategory(RoomCategoryDto roomCategoryDto) throws RoomCategoryException;
+    RoomCategoryDto createRoomCategory(RoomCategoryDto roomCategoryDto);
 
-    RoomCategoryDto updateRoomCategory(Long roomCategoryId, RoomCategoryDto roomCategoryDto) throws ResourceNotFoundException;
+    RoomCategoryDto updateRoomCategory(Long roomCategoryId, RoomCategoryDto roomCategoryDto);
 
-    void deleteRoomCategory(Long roomCategoryId) throws ResourceNotFoundException;
+    void deleteRoomCategory(Long roomCategoryId);
 
 
 

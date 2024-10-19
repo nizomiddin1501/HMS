@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "UserPayment DTO is used for transferring payment data associated with the user across the application.")
 public class UserPaymentDto {
 
-
-
     @Schema(description = "Unique ID of the payment",
             example = "1")
     private Long id;

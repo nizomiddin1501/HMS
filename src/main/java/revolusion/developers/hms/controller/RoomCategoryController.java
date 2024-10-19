@@ -3,7 +3,7 @@ package revolusion.developers.hms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,23 +19,12 @@ import revolusion.developers.hms.service.RoomCategoryService;
  * including creating, updating, retrieving, and deleting roomCategory information.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/roomCategories")
 public class RoomCategoryController {
 
 
     private final RoomCategoryService roomCategoryService;
-
-    /**
-     * Constructor for RoomCategoryController.
-     *
-     * @param roomCategoryService the service to manage roomCategory records
-     * @Autowired automatically injects the RoomCategoryService bean
-     */
-    @Autowired
-    public RoomCategoryController(RoomCategoryService roomCategoryService) {
-        this.roomCategoryService = roomCategoryService;
-    }
-
 
 
 

@@ -34,21 +34,9 @@ public class Room {
     @Schema(description = "The hotel that the room belongs to")
     private Hotel hotel;
 
-
     @Transient
     @Schema(description = "The price of the room", example = "150.00")
     public Double getPrice() {
         return this.roomCategory.getPrice();
     }
-
-
-
-
-
-
-
-
-
-
-
 }
