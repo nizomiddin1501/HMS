@@ -8,9 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import revolusion.developers.hms.exceptions.OrderException;
+import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.payload.OrderUpdateRequest;
+import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.OrderService;
 import java.util.Optional;
 
@@ -44,12 +47,10 @@ public class OrderController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Page<OrderDto> orderDtos = orderService.getAllOrders(page,size);
-        CustomApiResponse<Page<OrderDto>> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of orders.",
                 true,
-                orderDtos
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+                orderDtos), HttpStatus.OK);
     }
 
 
@@ -69,23 +70,13 @@ public class OrderController {
     @ApiResponse(responseCode = "404", description = "Order not found.")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<OrderDto>> getOrderById(@PathVariable Long id) {
-        Optional<OrderDto> orderDto = orderService.getOrderById(id);
-        if (orderDto.isPresent()){
-            CustomApiResponse<OrderDto> response = new CustomApiResponse<>(
-                    "Successfully retrieved the order.",
-                    true,
-                    orderDto.get()
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<OrderDto> response = new CustomApiResponse<>(
-                    "Order not found.",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        OrderDto orderDto = orderService.getOrderById(id)
+                .orElseThrow(() -> new OrderException("Order not found"));
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Successfully retrieved the order.",
+                true,
+                orderDto), HttpStatus.OK);
         }
-    }
 
 
 
@@ -123,24 +114,12 @@ public class OrderController {
     public ResponseEntity<CustomApiResponse<OrderDto>> updateOrder(
             @PathVariable Long id,
             @RequestBody OrderUpdateRequest orderUpdateRequest) {
-        Optional<OrderDto> orderDtoOptional = orderService.getOrderById(id);
-        if (orderDtoOptional.isPresent()) {
-            OrderDto updatedOrder = orderService.updateOrder(id, orderUpdateRequest);
-            CustomApiResponse<OrderDto> response = new CustomApiResponse<>(
-                    "Order updated successfully",
-                    true,
-                    updatedOrder
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<OrderDto> response = new CustomApiResponse<>(
-                    "Order not found",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        OrderDto updatedOrder = orderService.updateOrder(id, orderUpdateRequest);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Order updated successfully",
+                true,
+                updatedOrder), HttpStatus.OK);
         }
-    }
 
 
 

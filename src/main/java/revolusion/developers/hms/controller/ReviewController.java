@@ -8,8 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import revolusion.developers.hms.exceptions.ReviewException;
+import revolusion.developers.hms.exceptions.RoleException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.ReviewDto;
+import revolusion.developers.hms.payload.RoleDto;
 import revolusion.developers.hms.service.ReviewService;
 
 import java.util.Optional;
@@ -44,12 +47,10 @@ public class ReviewController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Page<ReviewDto> reviewDtos = reviewService.getAllReviews(page,size);
-        CustomApiResponse<Page<ReviewDto>> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of reviews.",
                 true,
-                reviewDtos
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+                reviewDtos), HttpStatus.OK);
     }
 
 
@@ -66,23 +67,13 @@ public class ReviewController {
     @ApiResponse(responseCode = "404", description = "Review not found.")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<ReviewDto>> getReviewById(@PathVariable Long id) {
-        Optional<ReviewDto> reviewDto = reviewService.getReviewById(id);
-        if (reviewDto.isPresent()){
-            CustomApiResponse<ReviewDto> response = new CustomApiResponse<>(
-                    "Successfully retrieved the review.",
-                    true,
-                    reviewDto.get()
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<ReviewDto> response = new CustomApiResponse<>(
-                    "Review not found.",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        ReviewDto reviewDto = reviewService.getReviewById(id)
+                .orElseThrow(() -> new ReviewException("Review not found"));
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Successfully retrieved the review.",
+                true,
+                reviewDto), HttpStatus.OK);
         }
-    }
 
 
 
@@ -120,24 +111,12 @@ public class ReviewController {
     public ResponseEntity<CustomApiResponse<ReviewDto>>  updateReview(
             @PathVariable Long id,
             @RequestBody ReviewDto reviewDto) {
-        Optional<ReviewDto> reviewDtoOptional = reviewService.getReviewById(id);
-        if (reviewDtoOptional.isPresent()) {
-            ReviewDto updatedReview = reviewService.updateReview(id, reviewDto);
-            CustomApiResponse<ReviewDto> response = new CustomApiResponse<>(
-                    "Review updated successfully",
-                    true,
-                    updatedReview
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<ReviewDto> response = new CustomApiResponse<>(
-                    "Review not found",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        ReviewDto updatedReview = reviewService.updateReview(id, reviewDto);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Review updated successfully",
+                true,
+                updatedReview), HttpStatus.OK);
         }
-    }
 
 
 

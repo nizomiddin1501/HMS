@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import revolusion.developers.hms.config.MailTrapConfig;
 import revolusion.developers.hms.service.EmailService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 @Service
@@ -33,17 +34,18 @@ public class EmailServiceImpl implements EmailService {
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(mailTrapConfig.getUsername()));
+            message.setFrom(new InternetAddress(mailTrapConfig.getUsername(),mailTrapConfig.getPassword()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
             message.setSubject(subject);
             message.setText(body);
 
             Transport.send(message);
-
             System.out.println("Email sent successfully!");
 
         } catch (MessagingException e) {
             e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

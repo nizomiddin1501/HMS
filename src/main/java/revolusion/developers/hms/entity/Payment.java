@@ -28,7 +28,7 @@ public class Payment {
             required = true)
     private Double amount;
 
-    @Column(name = "payment_date", nullable = false)
+    @Column(name = "payment_date")
     @Schema(description = "Date of the payment",
             example = "2024-01-01",
             hidden = true)

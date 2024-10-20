@@ -1,7 +1,9 @@
 package revolusion.developers.hms.payload;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +21,7 @@ public class PaymentDto {
             example = "1")
     private Long id;
 
-    @NotBlank(message = "Amount cannot be blank")
+    @NotNull(message = "Amount cannot be null")
     @Schema(description = "Total amount paid",
             example = "450.00")
     private Double amount;
@@ -40,7 +42,10 @@ public class PaymentDto {
     private OrderDto orderDto;
 
 
-    @Schema(description = "The status of the payment", example = "PENDING")
+    @Schema(hidden = true,
+            description = "The status of the payment",
+            example = "PENDING")
+    @JsonIgnore
     private PaymentStatus paymentStatus;
 
 

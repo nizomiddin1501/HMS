@@ -164,14 +164,10 @@ public class UserController {
 
     /**
      * Update the details of an existing user using the provided UserDto.
-     * <p>
-     * This method accepts the user's ID and a DTO containing updated user details.
-     * It updates the user record if it exists and returns the updated UserDto object.
      *
-     * @param id      the ID of the user to be updated
+     * @param id the ID of the user to be updated
      * @param userDto the DTO containing updated user details
-     * @return a ResponseEntity containing a CustomApiResponse with the updated UserDto,
-     * or a NOT FOUND response if the user does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the updated UserDto
      */
     @Operation(summary = "Update user", description = "Update the details of an existing user.")
     @ApiResponse(responseCode = "200", description = "User updated successfully")

@@ -23,7 +23,7 @@ public class Order {
     @Schema(hidden = true)
     private Long id;
 
-    @Column(name = "order_date", nullable = false)
+    @Column(name = "order_date")
     @Schema(description = "The date the order was placed",
             example = "2024-10-10",
             required = true)

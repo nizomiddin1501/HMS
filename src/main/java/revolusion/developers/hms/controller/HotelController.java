@@ -8,8 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.HotelDto;
+import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.service.HotelService;
 
 import java.util.Optional;
@@ -42,12 +44,10 @@ public class HotelController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Page<HotelDto> hotelDtos = hotelService.getAllHotels(page, size);
-        CustomApiResponse<Page<HotelDto>> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of hotels.",
                 true,
-                hotelDtos
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+                hotelDtos), HttpStatus.OK);
     }
 
 
@@ -63,23 +63,13 @@ public class HotelController {
     @ApiResponse(responseCode = "404", description = "Hotel not found.")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<HotelDto>> getHotelById(@PathVariable Long id) {
-        Optional<HotelDto> hotelDto = hotelService.getHotelById(id);
-        if (hotelDto.isPresent()) {
-            CustomApiResponse<HotelDto> response = new CustomApiResponse<>(
-                    "Successfully retrieved the hotel.",
-                    true,
-                    hotelDto.get()
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<HotelDto> response = new CustomApiResponse<>(
-                    "Hotel not found.",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        HotelDto hotelDto = hotelService.getHotelById(id)
+                .orElseThrow(() -> new OrderException("Hotel not found"));
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Successfully retrieved the hotel.",
+                true,
+                hotelDto), HttpStatus.OK);
         }
-    }
 
 
     /**
@@ -114,25 +104,12 @@ public class HotelController {
     public ResponseEntity<CustomApiResponse<HotelDto>> updateHotel(
             @PathVariable Long id,
             @RequestBody HotelDto hotelDto) {
-        Optional<HotelDto> hotelDtoOptional = hotelService.getHotelById(id);
-        if (hotelDtoOptional.isPresent()) {
-            HotelDto updatedHotel = hotelService.updateHotel(id, hotelDto);
-            CustomApiResponse<HotelDto> response = new CustomApiResponse<>(
-                    "Hotel updated successfully",
-                    true,
-                    updatedHotel
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<HotelDto> response = new CustomApiResponse<>(
-                    "Hotel not found",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        HotelDto updatedHotel = hotelService.updateHotel(id, hotelDto);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Hotel updated successfully",
+                true,
+                updatedHotel), HttpStatus.OK);
         }
-    }
-
 
     /**
      * Delete a hotel by their ID.

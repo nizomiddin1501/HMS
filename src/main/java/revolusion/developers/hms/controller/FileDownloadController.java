@@ -35,7 +35,7 @@ public class FileDownloadController {
      * @return ResponseEntity containing a CustomApiResponse with the operation status
      * @throws IOException if an input or output exception occurs
      */
-    @GetMapping("/download/csv")
+    @GetMapping("/download/csv/{hotelId}")
     public ResponseEntity<CustomApiResponse<Void>> downloadCSV(@PathVariable Long hotelId, HttpServletResponse response) throws IOException {
         try {
             fileDownloadService.generateCSV(hotelId, response);
@@ -57,7 +57,7 @@ public class FileDownloadController {
      * @return ResponseEntity containing a CustomApiResponse with the operation status
      * @throws IOException if an input or output exception occurs
      */
-    @GetMapping("/download/excel")
+    @GetMapping("/download/excel/{hotelId}")
     public ResponseEntity<CustomApiResponse<Void>> downloadExcel(@PathVariable Long hotelId, HttpServletResponse response) throws IOException {
         try {
             fileDownloadService.generateExcel(hotelId, response);
@@ -80,7 +80,7 @@ public class FileDownloadController {
      * @throws IOException if an input or output exception occurs
      * @throws DocumentException if an error occurs during PDF generation
      */
-    @GetMapping("/download/pdf")
+    @GetMapping("/download/pdf/{hotelId}")
     public ResponseEntity<CustomApiResponse<Void>> downloadPDF(@PathVariable Long hotelId, HttpServletResponse response) throws IOException, DocumentException {
         try {
             fileDownloadService.generatePDF(hotelId, response);

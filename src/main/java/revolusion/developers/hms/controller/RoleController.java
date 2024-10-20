@@ -8,8 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import revolusion.developers.hms.exceptions.RoleException;
+import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.RoleDto;
+import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.RoleService;
 
 import java.util.Optional;
@@ -43,12 +46,10 @@ public class RoleController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Page<RoleDto> roleDtos = roleService.getAllRoles(page,size);
-        CustomApiResponse<Page<RoleDto>> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of roles.",
                 true,
-                roleDtos
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+                roleDtos), HttpStatus.OK);
     }
 
 
@@ -67,24 +68,13 @@ public class RoleController {
     @ApiResponse(responseCode = "404", description = "Role not found.")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoleDto>> getRoleById(@PathVariable Long id) {
-        Optional<RoleDto> roleDto = roleService.getRoleById(id);
-        if (roleDto.isPresent()){
-            CustomApiResponse<RoleDto> response = new CustomApiResponse<>(
-                    "Successfully retrieved the role.",
-                    true,
-                    roleDto.get()
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<RoleDto> response = new CustomApiResponse<>(
-                    "Role not found.",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        RoleDto roleDto = roleService.getRoleById(id)
+                .orElseThrow(() -> new RoleException("Role not found"));
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Successfully retrieved the role.",
+                true,
+                roleDto), HttpStatus.OK);
         }
-    }
-
 
 
     /**
@@ -121,24 +111,12 @@ public class RoleController {
     public ResponseEntity<CustomApiResponse<RoleDto>>  updateRole(
             @PathVariable Long id,
             @RequestBody RoleDto roleDto) {
-        Optional<RoleDto> roleDtoOptional = roleService.getRoleById(id);
-        if (roleDtoOptional.isPresent()) {
-            RoleDto updatedRole = roleService.updateRole(id, roleDto);
-            CustomApiResponse<RoleDto> response = new CustomApiResponse<>(
-                    "Role updated successfully",
-                    true,
-                    updatedRole
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<RoleDto> response = new CustomApiResponse<>(
-                    "Role not found",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        RoleDto updatedRole = roleService.updateRole(id, roleDto);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Role updated successfully",
+                true,
+                updatedRole), HttpStatus.OK);
         }
-    }
 
 
 

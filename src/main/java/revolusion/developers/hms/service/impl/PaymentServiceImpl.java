@@ -3,7 +3,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.*;
@@ -61,12 +60,11 @@ public class PaymentServiceImpl implements PaymentService {
         Order order = orderRepository.findById(paymentDto.getOrderDto().getId())
                 .orElseThrow(() -> new PaymentException("Buyurtma topilmadi."));
 
-        if (paymentDto.getPaymentStatus() == PaymentStatus.PAID) {
-            payment.setPaymentDate(Date.valueOf(LocalDate.now()));
-            payment.setPaymentStatus(PaymentStatus.PAID);
+        payment.setPaymentDate(Date.valueOf(LocalDate.now()));
 
+        if (paymentDto.getPaymentStatus() == PaymentStatus.PAID) {
+            payment.setPaymentStatus(PaymentStatus.PAID);
             order.setOrderStatus(OrderStatus.CONFIRMED);
-            orderRepository.save(order);
 
             Room room = order.getRoom();
             room.setRoomStatus(RoomStatus.BOOKED);
@@ -76,6 +74,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         Payment savedPayment = paymentRepository.save(payment);
+        orderRepository.save(order);
         return paymentMapper.paymentToDto(savedPayment);
     }
 
@@ -86,10 +85,12 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentDto updatePayment(Long paymentId, PaymentDto paymentDto) throws ResourceNotFoundException {
         Payment existingPayment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", " Id ", paymentId));
+
         Order order = existingPayment.getOrder();
         if (order == null || order.getUser() == null) {
             throw new PaymentException("Order not found for the payment.");
         }
+
         User user = order.getUser();
         UserPayment userPayment = userPaymentRepository.findByUserId(user.getId());
         if (userPayment == null) {

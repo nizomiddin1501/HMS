@@ -8,10 +8,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import revolusion.developers.hms.exceptions.RoomCategoryException;
+import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.RoomCategoryDto;
+import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.RoomCategoryService;
- import java.util.Optional;
+
+import java.util.Optional;
 
 /**
  * Controller for handling requests related to RoomCategory operations.
@@ -25,7 +29,6 @@ public class RoomCategoryController {
 
 
     private final RoomCategoryService roomCategoryService;
-
 
 
     /**
@@ -42,16 +45,12 @@ public class RoomCategoryController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        Page<RoomCategoryDto> roomCategoryDtos = roomCategoryService.getAllRoomCategories(page,size);
-        CustomApiResponse<Page<RoomCategoryDto>> response = new CustomApiResponse<>(
+        Page<RoomCategoryDto> roomCategoryDtos = roomCategoryService.getAllRoomCategories(page, size);
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of roomCategories.",
                 true,
-                roomCategoryDtos
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+                roomCategoryDtos), HttpStatus.OK);
     }
-
-
 
 
     /**
@@ -59,31 +58,20 @@ public class RoomCategoryController {
      *
      * @param id the ID of the roomCategory to retrieve
      * @return a ResponseEntity containing a CustomApiResponse with the RoomCategoryDto and
-     *         an HTTP status of OK
+     * an HTTP status of OK
      */
     @Operation(summary = "Get RoomCategory by ID", description = "Retrieve a roomCategory by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the roomCategory.")
     @ApiResponse(responseCode = "404", description = "RoomCategory not found.")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoomCategoryDto>> getRoomCategoryById(@PathVariable Long id) {
-        Optional<RoomCategoryDto> roomCategoryDto = roomCategoryService.getRoomCategoryById(id);
-        if (roomCategoryDto.isPresent()){
-            CustomApiResponse<RoomCategoryDto> response = new CustomApiResponse<>(
-                    "Successfully retrieved the roomCategory.",
-                    true,
-                    roomCategoryDto.get()
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<RoomCategoryDto> response = new CustomApiResponse<>(
-                    "RoomCategory not found.",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        RoomCategoryDto roomCategoryDto = roomCategoryService.getRoomCategoryById(id)
+                .orElseThrow(() -> new RoomCategoryException("RoomCategory not found"));
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Successfully retrieved the roomCategory.",
+                true,
+                roomCategoryDto), HttpStatus.OK);
         }
-    }
-
 
 
     /**
@@ -95,7 +83,7 @@ public class RoomCategoryController {
     @Operation(summary = "Create a new RoomCategory", description = "Create a new roomCategory record.")
     @ApiResponse(responseCode = "201", description = "RoomCategory created successfully.")
     @PostMapping
-    public ResponseEntity<CustomApiResponse<RoomCategoryDto>> createRoomCategory(@Valid @RequestBody RoomCategoryDto roomCategoryDto){
+    public ResponseEntity<CustomApiResponse<RoomCategoryDto>> createRoomCategory(@Valid @RequestBody RoomCategoryDto roomCategoryDto) {
         RoomCategoryDto savedRoomCategory = roomCategoryService.createRoomCategory(roomCategoryDto);
         return new ResponseEntity<>(new CustomApiResponse<>(
                 "RoomCategory created successfully",
@@ -104,12 +92,10 @@ public class RoomCategoryController {
     }
 
 
-
-
     /**
      * Update the details of an existing roomCategory using the provided RoomCategoryDto.
      *
-     * @param id the ID of the roomCategory to be updated
+     * @param id              the ID of the roomCategory to be updated
      * @param roomCategoryDto the DTO containing updated roomCategory details
      * @return a ResponseEntity containing a CustomApiResponse with the updated RoomCategoryDto
      */
@@ -117,30 +103,15 @@ public class RoomCategoryController {
     @ApiResponse(responseCode = "200", description = "RoomCategory updated successfully")
     @ApiResponse(responseCode = "404", description = "RoomCategory not found")
     @PutMapping("/{id}")
-    public ResponseEntity<CustomApiResponse<RoomCategoryDto>>  updateRoomCategory(
+    public ResponseEntity<CustomApiResponse<RoomCategoryDto>> updateRoomCategory(
             @PathVariable Long id,
             @RequestBody RoomCategoryDto roomCategoryDto) {
-        Optional<RoomCategoryDto> roomCategoryDtoOptional = roomCategoryService.getRoomCategoryById(id);
-        if (roomCategoryDtoOptional.isPresent()) {
-            RoomCategoryDto updatedRoomCategory = roomCategoryService.updateRoomCategory(id, roomCategoryDto);
-            CustomApiResponse<RoomCategoryDto> response = new CustomApiResponse<>(
-                    "RoomCategory updated successfully",
-                    true,
-                    updatedRoomCategory
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<RoomCategoryDto> response = new CustomApiResponse<>(
-                    "RoomCategory not found",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
+        RoomCategoryDto updatedRoomCategory = roomCategoryService.updateRoomCategory(id, roomCategoryDto);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "RoomCategory updated successfully",
+                true,
+                updatedRoomCategory), HttpStatus.OK);
     }
-
-
-
 
 
     /**
@@ -159,6 +130,6 @@ public class RoomCategoryController {
                 "RoomCategory deleted successfully.",
                 true,
                 null), HttpStatus.NO_CONTENT);
-        }
+    }
 
 }

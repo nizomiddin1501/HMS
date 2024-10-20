@@ -8,8 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import revolusion.developers.hms.exceptions.PaymentException;
+import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.PaymentDto;
+import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.PaymentService;
 
 import java.util.Optional;
@@ -26,9 +29,6 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-
-
-
     /**
      * Retrieve a paginated list of payments.
      *
@@ -43,15 +43,12 @@ public class PaymentController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        Page<PaymentDto> paymentDtos = paymentService.getAllPayments(page,size);
-        CustomApiResponse<Page<PaymentDto>> response = new CustomApiResponse<>(
+        Page<PaymentDto> paymentDtos = paymentService.getAllPayments(page, size);
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of payments.",
                 true,
-                paymentDtos
-        );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+                paymentDtos), HttpStatus.OK);
     }
-
 
 
     /**
@@ -59,31 +56,20 @@ public class PaymentController {
      *
      * @param id the ID of the payment to retrieve
      * @return a ResponseEntity containing a CustomApiResponse with the PaymentDto and
-     *         an HTTP status of OK
+     * an HTTP status of OK
      */
     @Operation(summary = "Get Payment by ID", description = "Retrieve a payment by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the payment.")
     @ApiResponse(responseCode = "404", description = "Payment not found.")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<PaymentDto>> getPaymentById(@PathVariable Long id) {
-        Optional<PaymentDto> paymentDto = paymentService.getPaymentById(id);
-        if (paymentDto.isPresent()){
-            CustomApiResponse<PaymentDto> response = new CustomApiResponse<>(
-                    "Successfully retrieved the payment.",
-                    true,
-                    paymentDto.get()
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<PaymentDto> response = new CustomApiResponse<>(
-                    "Payment not found.",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        PaymentDto paymentDto = paymentService.getPaymentById(id)
+                .orElseThrow(() -> new PaymentException("Payment not found"));
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Successfully retrieved the payment.",
+                true,
+                paymentDto), HttpStatus.OK);
         }
-    }
-
 
 
     /**
@@ -95,7 +81,7 @@ public class PaymentController {
     @Operation(summary = "Create a new Payment", description = "Create a new payment record.")
     @ApiResponse(responseCode = "201", description = "Payment created successfully.")
     @PostMapping
-    public ResponseEntity<CustomApiResponse<PaymentDto>> createPayment(@Valid @RequestBody PaymentDto paymentDto){
+    public ResponseEntity<CustomApiResponse<PaymentDto>> createPayment(@Valid @RequestBody PaymentDto paymentDto) {
         PaymentDto savedPayment = paymentService.createPayment(paymentDto);
         return new ResponseEntity<>(new CustomApiResponse<>(
                 "Payment created successfully",
@@ -104,12 +90,10 @@ public class PaymentController {
     }
 
 
-
-
     /**
      * Update the details of an existing payment using the provided PaymentDto.
      *
-     * @param id the ID of the payment to be updated
+     * @param id         the ID of the payment to be updated
      * @param paymentDto the DTO containing updated payment details
      * @return a ResponseEntity containing a CustomApiResponse with the updated PaymentDto
      */
@@ -117,28 +101,15 @@ public class PaymentController {
     @ApiResponse(responseCode = "200", description = "Payment updated successfully")
     @ApiResponse(responseCode = "404", description = "Payment not found")
     @PutMapping("/{id}")
-    public ResponseEntity<CustomApiResponse<PaymentDto>>  updatePayment(
+    public ResponseEntity<CustomApiResponse<PaymentDto>> updatePayment(
             @PathVariable Long id,
             @RequestBody PaymentDto paymentDto) {
-        Optional<PaymentDto> roleDtoOptional = paymentService.getPaymentById(id);
-        if (roleDtoOptional.isPresent()) {
-            PaymentDto updatedPayment = paymentService.updatePayment(id, paymentDto);
-            CustomApiResponse<PaymentDto> response = new CustomApiResponse<>(
-                    "Payment updated successfully",
-                    true,
-                    updatedPayment
-            );
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            CustomApiResponse<PaymentDto> response = new CustomApiResponse<>(
-                    "Payment not found",
-                    false,
-                    null
-            );
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        PaymentDto updatedPayment = paymentService.updatePayment(id, paymentDto);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Payment updated successfully",
+                true,
+                updatedPayment), HttpStatus.OK);
         }
-    }
-
 
 
     /**
@@ -157,7 +128,7 @@ public class PaymentController {
                 "Payment deleted successfully.",
                 true,
                 null), HttpStatus.NO_CONTENT);
-        }
     }
+}
 
 
