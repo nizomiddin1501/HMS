@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.PaymentException;
 import revolusion.developers.hms.exceptions.UserException;
@@ -38,6 +39,7 @@ public class PaymentController {
      */
     @Operation(summary = "Get all Payments with Pagination", description = "Retrieve a paginated list of all payments.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of payments.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<PaymentDto>>> getAllPayments(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -61,6 +63,7 @@ public class PaymentController {
     @Operation(summary = "Get Payment by ID", description = "Retrieve a payment by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the payment.")
     @ApiResponse(responseCode = "404", description = "Payment not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<PaymentDto>> getPaymentById(@PathVariable Long id) {
         PaymentDto paymentDto = paymentService.getPaymentById(id)
@@ -80,6 +83,7 @@ public class PaymentController {
      */
     @Operation(summary = "Create a new Payment", description = "Create a new payment record.")
     @ApiResponse(responseCode = "201", description = "Payment created successfully.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomApiResponse<PaymentDto>> createPayment(@Valid @RequestBody PaymentDto paymentDto) {
         PaymentDto savedPayment = paymentService.createPayment(paymentDto);
@@ -100,6 +104,7 @@ public class PaymentController {
     @Operation(summary = "Update payment", description = "Update the details of an existing payment.")
     @ApiResponse(responseCode = "200", description = "Payment updated successfully")
     @ApiResponse(responseCode = "404", description = "Payment not found")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<PaymentDto>> updatePayment(
             @PathVariable Long id,
@@ -121,6 +126,7 @@ public class PaymentController {
     @Operation(summary = "Delete Payment", description = "Delete a payment by its ID.")
     @ApiResponse(responseCode = "204", description = "Payment deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Payment not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deletePayment(@PathVariable Long id) {
         paymentService.deletePayment(id);

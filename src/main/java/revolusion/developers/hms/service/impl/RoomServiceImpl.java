@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Hotel;
 import revolusion.developers.hms.entity.Room;
 import revolusion.developers.hms.entity.RoomCategory;
-import revolusion.developers.hms.entity.status.RoomStatus;
+import revolusion.developers.hms.entity.enums.RoomStatus;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.mapper.RoomMapper;

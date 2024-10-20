@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import revolusion.developers.hms.entity.status.PaymentStatus;
+import revolusion.developers.hms.entity.enums.PaymentStatus;
 
 import java.sql.Date;
 

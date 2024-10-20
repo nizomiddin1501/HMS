@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.RoomCategoryException;
 import revolusion.developers.hms.exceptions.UserException;
@@ -40,6 +41,7 @@ public class RoomCategoryController {
      */
     @Operation(summary = "Get all RoomCategories with Pagination", description = "Retrieve a paginated list of all roomCategories.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of roomCategories.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<RoomCategoryDto>>> getAllRoomCategories(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -63,6 +65,7 @@ public class RoomCategoryController {
     @Operation(summary = "Get RoomCategory by ID", description = "Retrieve a roomCategory by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the roomCategory.")
     @ApiResponse(responseCode = "404", description = "RoomCategory not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoomCategoryDto>> getRoomCategoryById(@PathVariable Long id) {
         RoomCategoryDto roomCategoryDto = roomCategoryService.getRoomCategoryById(id)
@@ -82,6 +85,7 @@ public class RoomCategoryController {
      */
     @Operation(summary = "Create a new RoomCategory", description = "Create a new roomCategory record.")
     @ApiResponse(responseCode = "201", description = "RoomCategory created successfully.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomApiResponse<RoomCategoryDto>> createRoomCategory(@Valid @RequestBody RoomCategoryDto roomCategoryDto) {
         RoomCategoryDto savedRoomCategory = roomCategoryService.createRoomCategory(roomCategoryDto);
@@ -102,6 +106,7 @@ public class RoomCategoryController {
     @Operation(summary = "Update roomCategory", description = "Update the details of an existing roomCategory.")
     @ApiResponse(responseCode = "200", description = "RoomCategory updated successfully")
     @ApiResponse(responseCode = "404", description = "RoomCategory not found")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoomCategoryDto>> updateRoomCategory(
             @PathVariable Long id,
@@ -123,6 +128,7 @@ public class RoomCategoryController {
     @Operation(summary = "Delete RoomCategory", description = "Delete a roomCategory by its ID.")
     @ApiResponse(responseCode = "204", description = "RoomCategory deleted successfully.")
     @ApiResponse(responseCode = "404", description = "RoomCategory not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteRoom(@PathVariable Long id) {
         roomCategoryService.deleteRoomCategory(id);

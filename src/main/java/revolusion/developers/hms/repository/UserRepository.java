@@ -10,10 +10,6 @@ import java.util.List;
 public interface UserRepository extends BaseRepository<User, Long> {
 
 
-    // Name exists check
-    @Query(value = "select count(*) > 0 from users u where u.user_name = :name", nativeQuery = true)
-    boolean existsByName(@Param("name") String name);
-
     // Email exists check
     @Query(value = "select count(*) > 0 from users u where u.user_email = :email", nativeQuery = true)
     boolean existsByEmail(@Param("email") String email);
@@ -22,6 +18,7 @@ public interface UserRepository extends BaseRepository<User, Long> {
     // Get user email
     @Query(value = "select * from users u where u.user_email = :email", nativeQuery = true)
     User findByUserEmail(@Param("email") String email);
+
 
 
 

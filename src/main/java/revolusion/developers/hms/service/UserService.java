@@ -3,6 +3,7 @@ package revolusion.developers.hms.service;
 import org.springframework.data.domain.Page;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserException;
+import revolusion.developers.hms.payload.LoginDto;
 import revolusion.developers.hms.payload.UserDto;
 
 import java.util.List;
@@ -19,7 +20,9 @@ public interface UserService {
 
     void verifyUser(String email, String verificationCode) throws UserException;
 
-    void sendResetPasswordEmail(String email) throws UserException;
+    void sendResetPasswordEmail(String email);
+
+    UserDto loginUser(LoginDto loginDto);
 
     void resetPassword(String email, String resetCode, String newPassword) throws UserException;
 

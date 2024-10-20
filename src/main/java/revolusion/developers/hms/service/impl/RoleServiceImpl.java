@@ -16,11 +16,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
-
     private final RoleRepository roleRepository;
     private final RoleMapper roleMapper;
-
-
 
     @Override
     public Page<RoleDto> getAllRoles(int page, int size) {

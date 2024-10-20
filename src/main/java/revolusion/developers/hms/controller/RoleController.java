@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.RoleException;
 import revolusion.developers.hms.exceptions.UserException;
@@ -24,12 +25,10 @@ import java.util.Optional;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/roles")
+@RequestMapping("/api/admin/roles")
 public class RoleController {
 
     private final RoleService roleService;
-
-
 
     /**
      * Retrieve a paginated list of roles.
@@ -40,6 +39,7 @@ public class RoleController {
      */
     @Operation(summary = "Get all Roles with Pagination", description = "Retrieve a paginated list of all roles.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of roles.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<RoleDto>>> getAllRoles(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -53,9 +53,6 @@ public class RoleController {
     }
 
 
-
-
-
     /**
      * Retrieve a user by their unique ID using the provided UserDto.
      *
@@ -66,6 +63,7 @@ public class RoleController {
     @Operation(summary = "Get Role by ID", description = "Retrieve a role by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the role.")
     @ApiResponse(responseCode = "404", description = "Role not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoleDto>> getRoleById(@PathVariable Long id) {
         RoleDto roleDto = roleService.getRoleById(id)
@@ -85,6 +83,7 @@ public class RoleController {
      */
     @Operation(summary = "Create a new Role", description = "Create a new role record.")
     @ApiResponse(responseCode = "201", description = "Role created successfully.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomApiResponse<RoleDto>> createRole(@Valid @RequestBody RoleDto roleDto){
         RoleDto savedRole = roleService.createRole(roleDto);
@@ -93,9 +92,6 @@ public class RoleController {
                 true,
                 savedRole), HttpStatus.CREATED);
     }
-
-
-
 
     /**
      * Update the details of an existing role using the provided RoleDto.
@@ -107,6 +103,7 @@ public class RoleController {
     @Operation(summary = "Update role", description = "Update the details of an existing role.")
     @ApiResponse(responseCode = "200", description = "Role updated successfully")
     @ApiResponse(responseCode = "404", description = "Role not found")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoleDto>>  updateRole(
             @PathVariable Long id,
@@ -129,6 +126,7 @@ public class RoleController {
     @Operation(summary = "Delete Role", description = "Delete a role by its ID.")
     @ApiResponse(responseCode = "204", description = "Role deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Role not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
@@ -138,4 +136,3 @@ public class RoleController {
                 null), HttpStatus.NO_CONTENT);
         }
     }
-

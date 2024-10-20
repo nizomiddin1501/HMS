@@ -1,11 +1,10 @@
 package revolusion.developers.hms.entity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import revolusion.developers.hms.entity.status.RoomStatus;
+import revolusion.developers.hms.entity.enums.RoomStatus;
 
 @Data
 @AllArgsConstructor

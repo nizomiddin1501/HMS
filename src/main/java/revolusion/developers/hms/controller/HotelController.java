@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.payload.CustomApiResponse;
@@ -38,6 +39,7 @@ public class HotelController {
      */
     @Operation(summary = "Get all Hotels with Pagination", description = "Retrieve a paginated list of all hotels.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of hotels.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<HotelDto>>> getAllHotels(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -61,6 +63,7 @@ public class HotelController {
     @Operation(summary = "Get Hotel by ID", description = "Retrieve a hotel by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the hotel.")
     @ApiResponse(responseCode = "404", description = "Hotel not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<HotelDto>> getHotelById(@PathVariable Long id) {
         HotelDto hotelDto = hotelService.getHotelById(id)
@@ -80,6 +83,7 @@ public class HotelController {
      */
     @Operation(summary = "Create a new Hotel", description = "Create a new hotel record.")
     @ApiResponse(responseCode = "201", description = "Hotel created successfully.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomApiResponse<HotelDto>> createHotel(@Valid @RequestBody HotelDto hotelDto) {
         HotelDto savedHotel = hotelService.createHotel(hotelDto);
@@ -100,6 +104,7 @@ public class HotelController {
     @Operation(summary = "Update hotel", description = "Update the details of an existing hotel.")
     @ApiResponse(responseCode = "200", description = "Hotel updated successfully")
     @ApiResponse(responseCode = "404", description = "Hotel not found")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<HotelDto>> updateHotel(
             @PathVariable Long id,
@@ -120,6 +125,7 @@ public class HotelController {
     @Operation(summary = "Delete Hotel", description = "Delete a hotel by its ID.")
     @ApiResponse(responseCode = "204", description = "Hotel deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Hotel not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteHotel(@PathVariable Long id) {
         hotelService.deleteHotel(id);

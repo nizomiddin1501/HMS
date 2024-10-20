@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.service.FileDownloadService;
@@ -22,8 +23,6 @@ public class FileDownloadController {
 
     private final FileDownloadService fileDownloadService;
 
-
-
     /**
      * Download a CSV file.
      *
@@ -35,6 +34,8 @@ public class FileDownloadController {
      * @return ResponseEntity containing a CustomApiResponse with the operation status
      * @throws IOException if an input or output exception occurs
      */
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/download/csv/{hotelId}")
     public ResponseEntity<CustomApiResponse<Void>> downloadCSV(@PathVariable Long hotelId, HttpServletResponse response) throws IOException {
         try {
@@ -57,6 +58,8 @@ public class FileDownloadController {
      * @return ResponseEntity containing a CustomApiResponse with the operation status
      * @throws IOException if an input or output exception occurs
      */
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/download/excel/{hotelId}")
     public ResponseEntity<CustomApiResponse<Void>> downloadExcel(@PathVariable Long hotelId, HttpServletResponse response) throws IOException {
         try {
@@ -80,6 +83,8 @@ public class FileDownloadController {
      * @throws IOException if an input or output exception occurs
      * @throws DocumentException if an error occurs during PDF generation
      */
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/download/pdf/{hotelId}")
     public ResponseEntity<CustomApiResponse<Void>> downloadPDF(@PathVariable Long hotelId, HttpServletResponse response) throws IOException, DocumentException {
         try {

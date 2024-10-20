@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserPaymentException;
@@ -37,6 +38,7 @@ public class UserPaymentController {
      */
     @Operation(summary = "Get all UserPayments with Pagination", description = "Retrieve a paginated list of all userPayments.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of userPayments.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<UserPaymentDto>>> getAllUserPayments(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -61,6 +63,7 @@ public class UserPaymentController {
     @Operation(summary = "Get UserPayment by ID", description = "Retrieve a userPayment by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the userPayment.")
     @ApiResponse(responseCode = "404", description = "UserPayment not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<UserPaymentDto>> getUserPaymentById(@PathVariable Long id) {
         UserPaymentDto userPaymentDto = userPaymentService.getUserPaymentById(id)
@@ -82,6 +85,7 @@ public class UserPaymentController {
      */
     @Operation(summary = "Create a new UserPayment", description = "Create a new userPayment record.")
     @ApiResponse(responseCode = "201", description = "UserPayment created successfully.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomApiResponse<UserPaymentDto>> createUserPayment(@Valid @RequestBody UserPaymentDto userPaymentDto){
         UserPaymentDto savedUserPayment = userPaymentService.createUserPayment(userPaymentDto);
@@ -106,6 +110,7 @@ public class UserPaymentController {
     @Operation(summary = "Update userPayment", description = "Update the details of an existing userPayment.")
     @ApiResponse(responseCode = "200", description = "UserPayment updated successfully")
     @ApiResponse(responseCode = "404", description = "UserPayment not found")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<UserPaymentDto>> updateUserPayment(
             @PathVariable Long id,
@@ -130,6 +135,7 @@ public class UserPaymentController {
     @Operation(summary = "Delete UserPayment", description = "Delete a userPayment by its ID.")
     @ApiResponse(responseCode = "204", description = "UserPayment deleted successfully.")
     @ApiResponse(responseCode = "404", description = "UserPayment not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteUserPayment(@PathVariable Long id) {
         userPaymentService.deleteUserPayment(id);

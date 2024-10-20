@@ -8,6 +8,7 @@ import revolusion.developers.hms.entity.User;
 import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.mapper.UserMapper;
+import revolusion.developers.hms.payload.LoginDto;
 import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.repository.UserRepository;
 import revolusion.developers.hms.service.EmailService;
@@ -114,6 +115,20 @@ public class UserServiceImpl implements UserService {
                 "To reset your password, please use the following code: " + resetCode +
                 "\n\nThank you!";
         emailService.sendEmail(email, subject, body);
+    }
+
+    @Override
+    public UserDto loginUser(LoginDto loginDto) throws UserException{
+        User user = userRepository.findByUserEmail(loginDto.getEmail());
+        if (user == null) {
+            throw new UserException("User not found with this email");
+        }
+
+        if (!user.getPassword().equals(loginDto.getPassword())) {
+            throw new UserException("Invalid password");
+        }
+
+        return userMapper.userToDto(user);
     }
 
     @Override

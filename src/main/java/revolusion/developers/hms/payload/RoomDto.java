@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import revolusion.developers.hms.entity.status.RoomStatus;
+import revolusion.developers.hms.entity.enums.RoomStatus;
 
 @Data
 @NoArgsConstructor

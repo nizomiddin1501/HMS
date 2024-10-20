@@ -1,4 +1,4 @@
-package revolusion.developers.hms.entity.status;
+package revolusion.developers.hms.entity.enums;
 
 public enum OrderStatus {
 

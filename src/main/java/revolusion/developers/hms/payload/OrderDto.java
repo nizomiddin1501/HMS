@@ -3,12 +3,11 @@ package revolusion.developers.hms.payload;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import revolusion.developers.hms.entity.status.OrderStatus;
+import revolusion.developers.hms.entity.enums.OrderStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

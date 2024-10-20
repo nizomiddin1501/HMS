@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.RoomException;
 import revolusion.developers.hms.exceptions.UserException;
@@ -29,7 +30,6 @@ public class RoomController {
 
     private final RoomService roomService;
 
-
     /**
      * Retrieve a paginated list of rooms.
      *
@@ -39,6 +39,7 @@ public class RoomController {
      */
     @Operation(summary = "Get all Rooms with Pagination", description = "Retrieve a paginated list of all rooms.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of rooms.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<RoomDto>>> getAllRooms(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -62,6 +63,7 @@ public class RoomController {
     @Operation(summary = "Get Room by ID", description = "Retrieve a room by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the room.")
     @ApiResponse(responseCode = "404", description = "Room not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoomDto>> getRoomById(@PathVariable Long id) {
         RoomDto roomDto = roomService.getRoomById(id)
@@ -81,6 +83,7 @@ public class RoomController {
      */
     @Operation(summary = "Create a new Room", description = "Create a new room record.")
     @ApiResponse(responseCode = "201", description = "Room created successfully.")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomApiResponse<RoomDto>> createRoom(@Valid @RequestBody RoomDto roomDto) {
         RoomDto savedRoom = roomService.createRoom(roomDto);
@@ -101,6 +104,7 @@ public class RoomController {
     @Operation(summary = "Update room", description = "Update the details of an existing room.")
     @ApiResponse(responseCode = "200", description = "Room updated successfully")
     @ApiResponse(responseCode = "404", description = "Room not found")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<RoomDto>> updateRoom(
             @PathVariable Long id,
@@ -122,6 +126,7 @@ public class RoomController {
     @Operation(summary = "Delete Room", description = "Delete a room by its ID.")
     @ApiResponse(responseCode = "204", description = "Room deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Room not found.")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);

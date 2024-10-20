@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.OrderException;
 import revolusion.developers.hms.exceptions.UserException;
@@ -15,6 +16,7 @@ import revolusion.developers.hms.payload.OrderDto;
 import revolusion.developers.hms.payload.OrderUpdateRequest;
 import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.OrderService;
+
 import java.util.Optional;
 
 /**
@@ -30,8 +32,6 @@ public class OrderController {
     private final OrderService orderService;
 
 
-
-
     /**
      * Retrieve a paginated list of orders.
      *
@@ -41,12 +41,13 @@ public class OrderController {
      */
     @Operation(summary = "Get all Orders with Pagination", description = "Retrieve a paginated list of all orders.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of orders.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<OrderDto>>> getAllOrders(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        Page<OrderDto> orderDtos = orderService.getAllOrders(page,size);
+        Page<OrderDto> orderDtos = orderService.getAllOrders(page, size);
         return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of orders.",
                 true,
@@ -54,20 +55,17 @@ public class OrderController {
     }
 
 
-
-
-
-
     /**
      * Retrieve an order by their unique ID using the provided OrderDto.
      *
      * @param id the ID of the order to retrieve
      * @return a ResponseEntity containing a CustomApiResponse with the OrderDto and
-     *         an HTTP status of OK
+     * an HTTP status of OK
      */
     @Operation(summary = "Get Order by ID", description = "Retrieve a order by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the order.")
     @ApiResponse(responseCode = "404", description = "Order not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<OrderDto>> getOrderById(@PathVariable Long id) {
         OrderDto orderDto = orderService.getOrderById(id)
@@ -76,8 +74,7 @@ public class OrderController {
                 "Successfully retrieved the order.",
                 true,
                 orderDto), HttpStatus.OK);
-        }
-
+    }
 
 
     /**
@@ -88,8 +85,9 @@ public class OrderController {
      */
     @Operation(summary = "Create a new Order", description = "Create a new order record.")
     @ApiResponse(responseCode = "201", description = "Order created successfully.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<CustomApiResponse<OrderDto>> createOrder(@Valid @RequestBody OrderDto orderDto){
+    public ResponseEntity<CustomApiResponse<OrderDto>> createOrder(@Valid @RequestBody OrderDto orderDto) {
         OrderDto savedOrder = orderService.createOrder(orderDto);
         return new ResponseEntity<>(new CustomApiResponse<>(
                 "Order created successfully",
@@ -98,18 +96,17 @@ public class OrderController {
     }
 
 
-
-
     /**
      * Update the details of an existing order using the provided OrderDto.
      *
-     * @param id the ID of the order to be updated
+     * @param id                 the ID of the order to be updated
      * @param orderUpdateRequest the DTO containing updated order details
      * @return a ResponseEntity containing a CustomApiResponse with the updated OrderDto
      */
     @Operation(summary = "Update order", description = "Update the details of an existing order.")
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @ApiResponse(responseCode = "404", description = "Order not found")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<OrderDto>> updateOrder(
             @PathVariable Long id,
@@ -119,8 +116,7 @@ public class OrderController {
                 "Order updated successfully",
                 true,
                 updatedOrder), HttpStatus.OK);
-        }
-
+    }
 
 
     /**
@@ -132,6 +128,7 @@ public class OrderController {
     @Operation(summary = "Delete Order", description = "Delete a order by its ID.")
     @ApiResponse(responseCode = "204", description = "Order deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Order not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);
@@ -139,6 +136,6 @@ public class OrderController {
                 "Order deleted successfully.",
                 true,
                 null), HttpStatus.NO_CONTENT);
-        }
     }
+}
 

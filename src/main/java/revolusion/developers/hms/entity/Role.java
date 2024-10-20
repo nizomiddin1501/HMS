@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +24,9 @@ public class Role {
     @Column(name = "role_name", nullable = false, unique = true)
     @Schema(description = "Name of the role", example = "ADMIN", required = true)
     private String name;
+
+    //
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
+
 }

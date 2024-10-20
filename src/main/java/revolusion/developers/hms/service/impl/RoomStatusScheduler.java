@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import revolusion.developers.hms.entity.Order;
 import revolusion.developers.hms.entity.Room;
-import revolusion.developers.hms.entity.status.RoomStatus;
+import revolusion.developers.hms.entity.enums.RoomStatus;
 import revolusion.developers.hms.repository.OrderRepository;
 import revolusion.developers.hms.repository.RoomRepository;
 

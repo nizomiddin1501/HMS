@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
+import revolusion.developers.hms.payload.LoginDto;
 import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.EmailService;
 import revolusion.developers.hms.service.UserService;
@@ -39,6 +41,7 @@ public class UserController {
      */
     @Operation(summary = "Get all Users with Pagination", description = "Retrieve a paginated list of all users.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of users.")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<UserDto>>> getAllUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -62,6 +65,7 @@ public class UserController {
     @Operation(summary = "Get User by ID", description = "Retrieve a user by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the user.")
     @ApiResponse(responseCode = "404", description = "User not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomApiResponse<UserDto>> getUserById(@PathVariable Long id) {
         UserDto userDto = userService.getUserById(id)
@@ -74,7 +78,7 @@ public class UserController {
 
 
     /**
-     * Creates a new user.
+     * Creates a new user or register user.
      * <p>
      * This method validates the incoming user data (received via DTO) and sends a verification code
      * to the user's email. User data will not be saved in the database until the verification is completed.
@@ -84,6 +88,7 @@ public class UserController {
      */
     @Operation(summary = "Create a new User", description = "Creates a new user and sends a verification code to the email.")
     @ApiResponse(responseCode = "201", description = "User creation process initiated successfully.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomApiResponse<String>> createUser(@Valid @RequestBody UserDto userDto) {
         userService.createUser(userDto);
@@ -105,6 +110,7 @@ public class UserController {
      */
     @Operation(summary = "Verify User Email", description = "Verifies the user's email with the provided verification code.")
     @ApiResponse(responseCode = "200", description = "User verified successfully.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/verify")
     public ResponseEntity<CustomApiResponse<String>> verifyUser(
             @RequestParam String email,
@@ -118,6 +124,27 @@ public class UserController {
 
 
     /**
+     * Authenticates a user with provided credentials.
+     * Returns UserDto on successful login; responds with 401 for invalid credentials.
+     *
+     * @param loginDto the user's login details
+     * @return ResponseEntity with user details and success message
+     */
+    @Operation(summary = "User Login", description = "Login for the user.")
+    @ApiResponse(responseCode = "200", description = "User logged in successfully.")
+    @ApiResponse(responseCode = "401", description = "Invalid username or password.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PostMapping("/login")
+    public ResponseEntity<CustomApiResponse<UserDto>> loginUser(@Valid @RequestBody LoginDto loginDto) {
+        UserDto userDto = userService.loginUser(loginDto);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "User logged in successfully.",
+                true,
+                userDto), HttpStatus.OK);
+    }
+
+
+    /**
      * Sends a reset password email to the user.
      * <p>
      * This method generates a reset code and sends an email to the user to initiate the password reset process.
@@ -127,6 +154,7 @@ public class UserController {
      */
     @Operation(summary = "Send Reset Password Email", description = "Send a reset password email to the user.")
     @ApiResponse(responseCode = "200", description = "Reset password email sent successfully.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/reset-password")
     public ResponseEntity<CustomApiResponse<String>> sendResetPasswordEmail(@RequestParam String email) {
         userService.sendResetPasswordEmail(email);
@@ -149,6 +177,7 @@ public class UserController {
      */
     @Operation(summary = "Reset Password", description = "Reset the user's password using the reset code.")
     @ApiResponse(responseCode = "200", description = "Password reset successfully.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/reset-password-confirm")
     public ResponseEntity<CustomApiResponse<String>> resetPassword(
             @RequestParam String email,
@@ -172,6 +201,7 @@ public class UserController {
     @Operation(summary = "Update user", description = "Update the details of an existing user.")
     @ApiResponse(responseCode = "200", description = "User updated successfully")
     @ApiResponse(responseCode = "404", description = "User not found")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CustomApiResponse<UserDto>> updateUser(
             @PathVariable Long id,
@@ -196,6 +226,7 @@ public class UserController {
     @Operation(summary = "Delete User", description = "Delete a user by its ID.")
     @ApiResponse(responseCode = "204", description = "User deleted successfully.")
     @ApiResponse(responseCode = "404", description = "User not found.")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
