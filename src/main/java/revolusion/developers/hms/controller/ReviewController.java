@@ -30,13 +30,11 @@ public class ReviewController {
 
 
     /**
-     * Retrieve a paginated list of all reviews.
-     *
-     * This method fetches a paginated list of review records and returns them as a list of ReviewDto.
+     * Retrieve a paginated list of reviews.
      *
      * @param page the page number to retrieve (default is 0)
      * @param size the number of reviews per page (default is 10)
-     * @return a ResponseEntity containing a CustomApiResponse with the paginated list of ReviewDto representing all reviews
+     * @return a ResponseEntity containing a CustomApiResponse with the paginated ReviewDto list
      */
     @Operation(summary = "Get all Reviews with Pagination", description = "Retrieve a paginated list of all reviews.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of reviews.")
@@ -59,14 +57,9 @@ public class ReviewController {
     /**
      * Retrieve a review by their unique ID using the provided ReviewDto.
      *
-     * This method retrieves a review's details based on their ID and returns
-     * a CustomApiResponse containing the corresponding ReviewDto if found.
-     * If the review does not exist, it returns a CustomApiResponse with a
-     * message indicating that the review was not found and a 404 Not Found status.
-     *
      * @param id the ID of the review to retrieve
      * @return a ResponseEntity containing a CustomApiResponse with the ReviewDto and
-     *         an HTTP status of OK, or a NOT FOUND status if the review does not exist.
+     *         an HTTP status of OK
      */
     @Operation(summary = "Get Review by ID", description = "Retrieve a review by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the review.")
@@ -96,9 +89,6 @@ public class ReviewController {
     /**
      * Creates a new review.
      *
-     * This method validates the incoming review data (received via DTO) and saves it to the database
-     * if valid.
-     *
      * @param reviewDto the DTO containing the review information to be saved
      * @return a ResponseEntity containing a CustomApiResponse with the saved review data
      */
@@ -107,27 +97,21 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<CustomApiResponse<ReviewDto>> createReview(@Valid @RequestBody ReviewDto reviewDto){
         ReviewDto savedReview = reviewService.createReview(reviewDto);
-        CustomApiResponse<ReviewDto> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Review created successfully",
                 true,
-                savedReview
-        );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+                savedReview), HttpStatus.CREATED);
     }
 
 
 
 
     /**
-     * Update the details of an existing role using the provided ReviewDto.
-     *
-     * This method accepts the review's ID and a DTO containing updated review details.
-     * It updates the review record if it exists and returns the updated ReviewDto object.
+     * Update the details of an existing review using the provided ReviewDto.
      *
      * @param id the ID of the review to be updated
      * @param reviewDto the DTO containing updated review details
-     * @return a ResponseEntity containing a CustomApiResponse with the updated ReviewDto,
-     *         or a NOT FOUND response if the review does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the updated ReviewDto
      */
     @Operation(summary = "Update review", description = "Update the details of an existing review.")
     @ApiResponse(responseCode = "200", description = "Review updated successfully")
@@ -161,33 +145,19 @@ public class ReviewController {
     /**
      * Delete a review by their ID.
      *
-     * This method deletes the review record based on the given ID if it exists.
-     *
      * @param id the ID of the review to delete
-     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation,
-     *         or NOT FOUND if the review does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation
      */
     @Operation(summary = "Delete Review", description = "Delete a review by its ID.")
     @ApiResponse(responseCode = "204", description = "Review deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Review not found.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteReview(@PathVariable Long id) {
-        Optional<ReviewDto> reviewDto = reviewService.getReviewById(id);
-        if (reviewDto.isPresent()) {
-            reviewService.deleteReview(id);
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Review deleted successfully.",
-                    true,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NO_CONTENT);
-        } else {
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Review not found with ID: " + id,
-                    false,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NOT_FOUND);
+        reviewService.deleteReview(id);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Review deleted successfully.",
+                true,
+                null), HttpStatus.NO_CONTENT);
         }
     }
 
-
-}

@@ -30,13 +30,11 @@ public class PaymentController {
 
 
     /**
-     * Retrieve a paginated list of all payments.
-     *
-     * This method fetches a paginated list of payment records and returns them as a list of PaymentDto.
+     * Retrieve a paginated list of payments.
      *
      * @param page the page number to retrieve (default is 0)
      * @param size the number of payments per page (default is 10)
-     * @return a ResponseEntity containing a CustomApiResponse with the paginated list of PaymentDto representing all payments
+     * @return a ResponseEntity containing a CustomApiResponse with the paginated PaymentDto list
      */
     @Operation(summary = "Get all Payments with Pagination", description = "Retrieve a paginated list of all payments.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of payments.")
@@ -59,14 +57,9 @@ public class PaymentController {
     /**
      * Retrieve a payment by their unique ID using the provided PaymentDto.
      *
-     * This method retrieves a payment's details based on their ID and returns
-     * a CustomApiResponse containing the corresponding PaymentDto if found.
-     * If the payment does not exist, it returns a CustomApiResponse with a
-     * message indicating that the payment was not found and a 404 Not Found status.
-     *
      * @param id the ID of the payment to retrieve
      * @return a ResponseEntity containing a CustomApiResponse with the PaymentDto and
-     *         an HTTP status of OK, or a NOT FOUND status if the payment does not exist.
+     *         an HTTP status of OK
      */
     @Operation(summary = "Get Payment by ID", description = "Retrieve a payment by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the payment.")
@@ -96,9 +89,6 @@ public class PaymentController {
     /**
      * Creates a new payment.
      *
-     * This method validates the incoming payment data (received via DTO) and saves it to the database
-     * if valid.
-     *
      * @param paymentDto the DTO containing the payment information to be saved
      * @return a ResponseEntity containing a CustomApiResponse with the saved payment data
      */
@@ -107,12 +97,10 @@ public class PaymentController {
     @PostMapping
     public ResponseEntity<CustomApiResponse<PaymentDto>> createPayment(@Valid @RequestBody PaymentDto paymentDto){
         PaymentDto savedPayment = paymentService.createPayment(paymentDto);
-        CustomApiResponse<PaymentDto> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Payment created successfully",
                 true,
-                savedPayment
-        );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+                savedPayment), HttpStatus.CREATED);
     }
 
 
@@ -121,13 +109,9 @@ public class PaymentController {
     /**
      * Update the details of an existing payment using the provided PaymentDto.
      *
-     * This method accepts the payment's ID and a DTO containing updated payment details.
-     * It updates the payment record if it exists and returns the updated PaymentDto object.
-     *
      * @param id the ID of the payment to be updated
      * @param paymentDto the DTO containing updated payment details
-     * @return a ResponseEntity containing a CustomApiResponse with the updated PaymentDto,
-     *         or a NOT FOUND response if the payment does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the updated PaymentDto
      */
     @Operation(summary = "Update payment", description = "Update the details of an existing payment.")
     @ApiResponse(responseCode = "200", description = "Payment updated successfully")
@@ -160,35 +144,20 @@ public class PaymentController {
     /**
      * Delete a payment by their ID.
      *
-     * This method deletes the payment record based on the given ID if it exists.
-     *
      * @param id the ID of the payment to delete
-     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation,
-     *         or NOT FOUND if the payment does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation
      */
     @Operation(summary = "Delete Payment", description = "Delete a payment by its ID.")
     @ApiResponse(responseCode = "204", description = "Payment deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Payment not found.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deletePayment(@PathVariable Long id) {
-        Optional<PaymentDto> paymentDto = paymentService.getPaymentById(id);
-        if (paymentDto.isPresent()) {
-            paymentService.deletePayment(id);
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Payment deleted successfully.",
-                    true,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NO_CONTENT);
-        } else {
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Payment not found with ID: " + id,
-                    false,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NOT_FOUND);
+        paymentService.deletePayment(id);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Payment deleted successfully.",
+                true,
+                null), HttpStatus.NO_CONTENT);
         }
     }
 
 
-
-
-}

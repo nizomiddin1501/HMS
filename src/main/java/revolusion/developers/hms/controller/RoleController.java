@@ -29,13 +29,11 @@ public class RoleController {
 
 
     /**
-     * Retrieve a paginated list of all roles.
-     *
-     * This method fetches a paginated list of role records and returns them as a list of RoleDto.
+     * Retrieve a paginated list of roles.
      *
      * @param page the page number to retrieve (default is 0)
      * @param size the number of roles per page (default is 10)
-     * @return a ResponseEntity containing a CustomApiResponse with the paginated list of RoleDto representing all roles
+     * @return a ResponseEntity containing a CustomApiResponse with the paginated RoleDto list
      */
     @Operation(summary = "Get all Roles with Pagination", description = "Retrieve a paginated list of all roles.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of roles.")
@@ -58,16 +56,11 @@ public class RoleController {
 
 
     /**
-     * Retrieve a role by their unique ID using the provided RoleDto.
+     * Retrieve a user by their unique ID using the provided UserDto.
      *
-     * This method retrieves a role's details based on their ID and returns
-     * a CustomApiResponse containing the corresponding RoleDto if found.
-     * If the role does not exist, it returns a CustomApiResponse with a
-     * message indicating that the role was not found and a 404 Not Found status.
-     *
-     * @param id the ID of the role to retrieve
-     * @return a ResponseEntity containing a CustomApiResponse with the RoleDto and
-     *         an HTTP status of OK, or a NOT FOUND status if the role does not exist.
+     * @param id the ID of the user to retrieve
+     * @return a ResponseEntity containing a CustomApiResponse with the UserDto and
+     *         an HTTP status of OK
      */
     @Operation(summary = "Get Role by ID", description = "Retrieve a role by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the role.")
@@ -97,9 +90,6 @@ public class RoleController {
     /**
      * Creates a new role.
      *
-     * This method validates the incoming role data (received via DTO) and saves it to the database
-     * if valid.
-     *
      * @param roleDto the DTO containing the role information to be saved
      * @return a ResponseEntity containing a CustomApiResponse with the saved role data
      */
@@ -108,12 +98,10 @@ public class RoleController {
     @PostMapping
     public ResponseEntity<CustomApiResponse<RoleDto>> createRole(@Valid @RequestBody RoleDto roleDto){
         RoleDto savedRole = roleService.createRole(roleDto);
-        CustomApiResponse<RoleDto> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Role created successfully",
                 true,
-                savedRole
-        );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+                savedRole), HttpStatus.CREATED);
     }
 
 
@@ -122,13 +110,9 @@ public class RoleController {
     /**
      * Update the details of an existing role using the provided RoleDto.
      *
-     * This method accepts the role's ID and a DTO containing updated role details.
-     * It updates the role record if it exists and returns the updated RoleDto object.
-     *
      * @param id the ID of the role to be updated
      * @param roleDto the DTO containing updated role details
-     * @return a ResponseEntity containing a CustomApiResponse with the updated RoleDto,
-     *         or a NOT FOUND response if the role does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the updated RoleDto
      */
     @Operation(summary = "Update role", description = "Update the details of an existing role.")
     @ApiResponse(responseCode = "200", description = "Role updated successfully")
@@ -161,34 +145,19 @@ public class RoleController {
     /**
      * Delete a role by their ID.
      *
-     * This method deletes the role record based on the given ID if it exists.
-     *
      * @param id the ID of the role to delete
-     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation,
-     *         or NOT FOUND if the role does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation
      */
     @Operation(summary = "Delete Role", description = "Delete a role by its ID.")
     @ApiResponse(responseCode = "204", description = "Role deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Role not found.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteRole(@PathVariable Long id) {
-        Optional<RoleDto> roleDto = roleService.getRoleById(id);
-        if (roleDto.isPresent()) {
-            roleService.deleteRole(id);
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Role deleted successfully.",
-                    true,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NO_CONTENT);
-        } else {
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Role not found with ID: " + id,
-                    false,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NOT_FOUND);
+        roleService.deleteRole(id);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Role deleted successfully.",
+                true,
+                null), HttpStatus.NO_CONTENT);
         }
     }
 
-
-
-}

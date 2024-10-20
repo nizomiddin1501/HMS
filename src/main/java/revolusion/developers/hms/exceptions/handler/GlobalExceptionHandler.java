@@ -41,7 +41,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // UserException uchun exception handler (maxsus exception)
     @ExceptionHandler(UserException.class)
     public ResponseEntity<CustomApiResponse> handleUserException(UserException ex) {
         String message = ex.getMessage();
@@ -49,7 +48,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 
-    // Umumiy exception handler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomApiResponse> handleGeneralException(Exception ex) {
         String message = "Unexpected error occurred: " + ex.getMessage();

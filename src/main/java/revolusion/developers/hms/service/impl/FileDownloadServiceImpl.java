@@ -43,7 +43,7 @@ public class FileDownloadServiceImpl implements FileDownloadService {
         HotelDto hotel = hotelMapper.hotelToDto(hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new RuntimeException("Hotel not found")));
 
-        List<OrderDto> orders = orderRepository.findAllOrderByHotelId(hotelId).stream()
+        List<OrderDto> orders = orderRepository.findByHotelId(hotelId).stream()
                 .map(orderMapper::orderToDto)
                 .collect(Collectors.toList());
 
@@ -74,7 +74,7 @@ public class FileDownloadServiceImpl implements FileDownloadService {
         HotelDto hotel = hotelMapper.hotelToDto(hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new RuntimeException("Hotel not found")));
 
-        List<OrderDto> orders = orderRepository.findAllOrderByHotelId(hotelId).stream()
+        List<OrderDto> orders = orderRepository.findByHotelId(hotelId).stream()
                 .map(orderMapper::orderToDto)
                 .collect(Collectors.toList());
 
@@ -133,7 +133,7 @@ public class FileDownloadServiceImpl implements FileDownloadService {
         HotelDto hotel = hotelMapper.hotelToDto(hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new RuntimeException("Hotel not found")));
 
-        List<OrderDto> orders = orderRepository.findAllOrderByHotelId(hotelId).stream()
+        List<OrderDto> orders = orderRepository.findByHotelId(hotelId).stream()
                 .map(orderMapper::orderToDto)
                 .collect(Collectors.toList());
 

@@ -30,13 +30,11 @@ public class OrderController {
 
 
     /**
-     * Retrieve a paginated list of all orders.
-     *
-     * This method fetches a paginated list of order records and returns them as a list of OrderDto.
+     * Retrieve a paginated list of orders.
      *
      * @param page the page number to retrieve (default is 0)
      * @param size the number of orders per page (default is 10)
-     * @return a ResponseEntity containing a CustomApiResponse with the paginated list of OrderDto representing all orders
+     * @return a ResponseEntity containing a CustomApiResponse with the paginated OrderDto list
      */
     @Operation(summary = "Get all Orders with Pagination", description = "Retrieve a paginated list of all orders.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of orders.")
@@ -62,14 +60,9 @@ public class OrderController {
     /**
      * Retrieve an order by their unique ID using the provided OrderDto.
      *
-     * This method retrieves an order's details based on their ID and returns
-     * a CustomApiResponse containing the corresponding OrderDto if found.
-     * If the order does not exist, it returns a CustomApiResponse with a
-     * message indicating that the order was not found and a 404 Not Found status.
-     *
      * @param id the ID of the order to retrieve
      * @return a ResponseEntity containing a CustomApiResponse with the OrderDto and
-     *         an HTTP status of OK, or a NOT FOUND status if the order does not exist.
+     *         an HTTP status of OK
      */
     @Operation(summary = "Get Order by ID", description = "Retrieve a order by their unique identifier.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the order.")
@@ -99,9 +92,6 @@ public class OrderController {
     /**
      * Creates a new order.
      *
-     * This method validates the incoming order data (received via DTO) and saves it to the database
-     * if valid.
-     *
      * @param orderDto the DTO containing the order information to be saved
      * @return a ResponseEntity containing a CustomApiResponse with the saved order data
      */
@@ -110,27 +100,21 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<CustomApiResponse<OrderDto>> createOrder(@Valid @RequestBody OrderDto orderDto){
         OrderDto savedOrder = orderService.createOrder(orderDto);
-        CustomApiResponse<OrderDto> response = new CustomApiResponse<>(
+        return new ResponseEntity<>(new CustomApiResponse<>(
                 "Order created successfully",
                 true,
-                savedOrder
-        );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+                savedOrder), HttpStatus.CREATED);
     }
 
 
 
 
     /**
-     * Update the details of an existing order using the provided OrderUpdateRequest.
-     *
-     * This method accepts the order's ID and a DTO containing updated order and payment details.
-     * It updates the order record if it exists and returns the updated OrderDto object.
+     * Update the details of an existing order using the provided OrderDto.
      *
      * @param id the ID of the order to be updated
-     * @param orderUpdateRequest the DTO containing updated order and payment details
-     * @return a ResponseEntity containing a CustomApiResponse with the updated OrderDto,
-     *         or a NOT FOUND response if the order does not exist
+     * @param orderUpdateRequest the DTO containing updated order details
+     * @return a ResponseEntity containing a CustomApiResponse with the updated OrderDto
      */
     @Operation(summary = "Update order", description = "Update the details of an existing order.")
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
@@ -163,34 +147,19 @@ public class OrderController {
     /**
      * Delete an order by their ID.
      *
-     * This method deletes the order record based on the given ID if it exists.
-     *
      * @param id the ID of the order to delete
-     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation,
-     *         or NOT FOUND if the order does not exist
+     * @return a ResponseEntity containing a CustomApiResponse with the status of the operation
      */
     @Operation(summary = "Delete Order", description = "Delete a order by its ID.")
     @ApiResponse(responseCode = "204", description = "Order deleted successfully.")
     @ApiResponse(responseCode = "404", description = "Order not found.")
     @DeleteMapping("/{id}")
     public ResponseEntity<CustomApiResponse<Void>> deleteOrder(@PathVariable Long id) {
-        Optional<OrderDto> orderDto = orderService.getOrderById(id);
-        if (orderDto.isPresent()) {
-            orderService.deleteOrder(id);
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Order deleted successfully.",
-                    true,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NO_CONTENT);
-        } else {
-            CustomApiResponse<Void> customApiResponse = new CustomApiResponse<>(
-                    "Order not found with ID: " + id,
-                    false,
-                    null);
-            return new ResponseEntity<>(customApiResponse, HttpStatus.NOT_FOUND);
+        orderService.deleteOrder(id);
+        return new ResponseEntity<>(new CustomApiResponse<>(
+                "Order deleted successfully.",
+                true,
+                null), HttpStatus.NO_CONTENT);
         }
     }
 
-
-
-}

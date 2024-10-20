@@ -15,10 +15,11 @@ public interface OrderRepository extends BaseRepository<Order, Long> {
     @Query(value = "select * from orders o where o.room_id = :roomId", nativeQuery = true)
     List<Order> findByRoomId(@Param("roomId") Long roomId);
 
-    // Deadline dan oldin bo'lgan barcha buyurtmalarni olish
+    // get all order from not deadline
     List<Order> findAllByDeadlineBefore(LocalDateTime deadline);
 
-    // Mehmonxona ID bo'yicha buyurtmalarni olish
-    List<Order> findAllOrderByHotelId(Long hotelId);
+    // get all order by hotelId
+    @Query(value = "select * from orders o where o.room_id in (select r.id from room r where r.hotel_id = :hotelId)", nativeQuery = true)
+    List<Order> findByHotelId(@Param("hotelId") Long hotelId);
 
 }
