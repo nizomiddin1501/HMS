@@ -19,9 +19,8 @@ import revolusion.developers.hms.service.PaymentService;
 import java.util.Optional;
 
 /**
- * Controller for handling requests related to Payment operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting payment information.
+ * REST controller for managing payments, offering endpoints for
+ * creating, updating, retrieving, and deleting payment records.
  */
 @RestController
 @RequiredArgsConstructor

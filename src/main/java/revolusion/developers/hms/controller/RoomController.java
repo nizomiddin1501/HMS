@@ -19,9 +19,8 @@ import revolusion.developers.hms.service.RoomService;
 import java.util.Optional;
 
 /**
- * Controller for handling requests related to Room operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting room information.
+ * REST controller for managing rooms, offering endpoints for
+ * creating, updating, retrieving, and deleting room records.
  */
 @RestController
 @RequiredArgsConstructor

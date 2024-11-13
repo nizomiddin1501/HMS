@@ -19,9 +19,8 @@ import revolusion.developers.hms.service.RoomCategoryService;
 import java.util.Optional;
 
 /**
- * Controller for handling requests related to RoomCategory operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting roomCategory information.
+ * REST controller for managing roomCategories, offering endpoints for
+ * creating, updating, retrieving, and deleting roomCategory records.
  */
 @RestController
 @RequiredArgsConstructor

@@ -19,9 +19,8 @@ import revolusion.developers.hms.service.ReviewService;
 import java.util.Optional;
 
 /**
- * Controller for handling requests related to Review operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting review information.
+ * REST controller for managing reviews, offering endpoints for
+ * creating, updating, retrieving, and deleting reviews records.
  */
 @RestController
 @RequiredArgsConstructor

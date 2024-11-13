@@ -10,18 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.RoleException;
-import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.RoleDto;
-import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.RoleService;
 
-import java.util.Optional;
 
 /**
- * Controller for handling requests related to Role operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting role information.
+ * REST controller for managing roles, offering endpoints for
+ * creating, updating, retrieving, and deleting role records.
  */
 @RestController
 @RequiredArgsConstructor

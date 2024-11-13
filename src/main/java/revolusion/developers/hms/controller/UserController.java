@@ -19,9 +19,8 @@ import revolusion.developers.hms.service.UserService;
 import java.util.Optional;
 
 /**
- * Controller for handling requests related to User operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting user information.
+ * REST controller for managing users, offering endpoints for
+ * creating, updating, retrieving, and deleting user records.
  */
 @RestController
 @RequiredArgsConstructor

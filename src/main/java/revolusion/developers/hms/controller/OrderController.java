@@ -20,9 +20,8 @@ import revolusion.developers.hms.service.OrderService;
 import java.util.Optional;
 
 /**
- * Controller for handling requests related to Order operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting order information.
+ * REST controller for managing orders, offering endpoints for
+ * creating, updating, retrieving, and deleting order records.
  */
 @RestController
 @RequiredArgsConstructor

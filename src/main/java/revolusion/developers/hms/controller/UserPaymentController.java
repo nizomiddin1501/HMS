@@ -9,18 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import revolusion.developers.hms.exceptions.ResourceNotFoundException;
 import revolusion.developers.hms.exceptions.UserPaymentException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.UserPaymentDto;
 import revolusion.developers.hms.service.UserPaymentService;
 
-import java.util.Optional;
-
 /**
- * Controller for handling requests related to UserPayment operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting userPayment information.
+ * REST controller for managing userPayments, offering endpoints for
+ * creating, updating, retrieving, and deleting userPayment records.
  */
 @RestController
 @RequiredArgsConstructor

@@ -18,9 +18,8 @@ import revolusion.developers.hms.service.HotelService;
 import java.util.Optional;
 
 /**
- * Controller for handling requests related to Hotel operations.
- * This controller provides RESTful endpoints to manage user records,
- * including creating, updating, retrieving, and deleting hotel information.
+ * REST controller for managing hotels, providing endpoints for
+ * creating, updating, retrieving, and deleting hotel records.
  */
 @RestController
 @RequiredArgsConstructor
