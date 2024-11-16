@@ -2,10 +2,7 @@ package revolusion.developers.hms.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import revolusion.developers.hms.entity.Order;
 import revolusion.developers.hms.entity.User;
-
-import java.util.List;
 
 public interface UserRepository extends BaseRepository<User, Long> {
 

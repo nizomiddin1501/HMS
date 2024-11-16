@@ -36,6 +36,7 @@ public class RoomServiceImpl implements RoomService {
         return roomsPage.map(roomMapper::roomToDto);
     }
 
+
     @Override
     public Optional<RoomDto> getRoomById(Long roomId) throws ResourceNotFoundException {
         Room room = roomRepository.findById(roomId)

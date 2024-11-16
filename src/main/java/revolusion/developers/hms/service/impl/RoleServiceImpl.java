@@ -36,7 +36,7 @@ public class RoleServiceImpl implements RoleService {
     public RoleDto createRole(RoleDto roleDto) throws RoleException {
         Role role = roleMapper.dtoToRole(roleDto);
         if (role.getName() == null || role.getName().isEmpty()) {
-            throw new RoomException("Role name cannot be null or empty");
+            throw new RoleException("Role name cannot be null or empty");
         }
         boolean exists = roleRepository.existsByName(role.getName());
         if (exists) {

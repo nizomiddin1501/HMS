@@ -10,13 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import revolusion.developers.hms.exceptions.RoomException;
-import revolusion.developers.hms.exceptions.UserException;
 import revolusion.developers.hms.payload.CustomApiResponse;
 import revolusion.developers.hms.payload.RoomDto;
-import revolusion.developers.hms.payload.UserDto;
 import revolusion.developers.hms.service.RoomService;
-
-import java.util.Optional;
 
 /**
  * REST controller for managing rooms, offering endpoints for
@@ -42,8 +38,7 @@ public class RoomController {
     @GetMapping
     public ResponseEntity<CustomApiResponse<Page<RoomDto>>> getAllRooms(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
+            @RequestParam(value = "size", defaultValue = "10") int size) {
         Page<RoomDto> roomDtos = roomService.getAllRooms(page, size);
         return new ResponseEntity<>(new CustomApiResponse<>(
                 "Successfully retrieved the list of rooms.",
